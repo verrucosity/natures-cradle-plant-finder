@@ -1,13 +1,33 @@
+import { useState } from 'react';
 import './PlantCard.css';
 
 export default function PlantCard({ plant, onOpen }) {
   const catClass = 'cat-' + plant.category.toLowerCase().replace(/[^a-z]/g, '');
+  const [imgError, setImgError] = useState(false);
+  const showImg = plant.imageUrl && !imgError;
 
   return (
     <div className="card" onClick={() => onOpen(plant)}>
-      <div className={`card-color-bar ${catClass}`} />
+      {/* Image or color-bar fallback */}
+      {showImg ? (
+        <div className="card-img-wrap">
+          <img
+            className="card-img"
+            src={plant.imageUrl}
+            alt={plant.name}
+            loading="lazy"
+            onError={() => setImgError(true)}
+          />
+          <span className={`card-img-category-badge ${catClass}`}>{plant.category}</span>
+        </div>
+      ) : (
+        <>
+          <div className={`card-color-bar ${catClass}`} />
+        </>
+      )}
+
       <div className="card-body">
-        <div className="card-category">{plant.category}</div>
+        {!showImg && <div className="card-category">{plant.category}</div>}
         <div className="card-name">{plant.name}</div>
         {plant.desc && <div className="card-desc">{plant.desc}</div>}
         <div className="card-attrs">

@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import './PlantModal.css';
 
+function ModalImage({ src, alt }) {
+  const [err, setErr] = useState(false);
+  if (!src || err) return null;
+  return (
+    <div className="modal-img-wrap">
+      <img src={src} alt={alt} className="modal-img" onError={() => setErr(true)} />
+    </div>
+  );
+}
+
 export default function PlantModal({ plant, onClose }) {
   const [submitted, setSubmitted] = useState(false);
 
@@ -44,6 +54,7 @@ export default function PlantModal({ plant, onClose }) {
         </div>
 
         <div className="modal-body">
+          <ModalImage src={plant.imageUrl} alt={plant.name} />
           <p className="modal-desc">{plant.desc || 'No description available.'}</p>
 
           <div className="modal-attrs-grid">
