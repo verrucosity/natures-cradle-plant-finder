@@ -62,30 +62,23 @@ export default function WishlistDrawer() {
 
     const fd = new FormData(e.target);
 
-    // Build a readable wishlist summary for the email body
-    const plantList = items.map((item, i) =>
-      `${i + 1}. ${item.plant.name} (${item.plant.category}) — Qty: ${item.qty}${item.size && item.size !== 'Any / Not Sure' ? `, Size: ${item.size}` : ''}`
-    ).join('\n');
-
     const payload = {
-      _subject: `Plant Wizard Wishlist — ${fd.get('fname')} ${fd.get('lname')}`,
-      name:     `${fd.get('fname')} ${fd.get('lname')}`,
-      email:    fd.get('email'),
-      phone:    fd.get('phone') || 'Not provided',
-      notes:    fd.get('notes') || 'None',
-      wishlist: plantList,
+      name:         `${fd.get('fname')} ${fd.get('lname')}`,
+      email:        fd.get('email'),
+      phone:        fd.get('phone') || '',
+      notes:        fd.get('notes') || '',
+      items,
       total_plants: items.length,
       total_units:  items.reduce((s, i) => s + i.qty, 0),
     };
 
     try {
-      const res = await fetch('https://formsubmit.co/ajax/estevan400@gmail.com', {
+      const res = await fetch('/api/submit-wishlist', {
         method:  'POST',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify(payload),
       });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && data.success !== 'false') {
+      if (res.ok) {
         setSubmitted(true);
       } else {
         alert('Something went wrong — please email us directly at estevan400@gmail.com');
