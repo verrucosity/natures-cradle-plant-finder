@@ -79,12 +79,13 @@ export default function WishlistDrawer() {
     };
 
     try {
-      const res = await fetch('https://formspree.io/estevan400@gmail.com', {
+      const res = await fetch('https://formsubmit.co/ajax/estevan400@gmail.com', {
         method:  'POST',
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
         body:    JSON.stringify(payload),
       });
-      if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success !== 'false') {
         setSubmitted(true);
       } else {
         alert('Something went wrong — please email us directly at estevan400@gmail.com');
