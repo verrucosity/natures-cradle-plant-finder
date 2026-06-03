@@ -67,13 +67,26 @@
 .modal-availability {
   margin-top: 12px;
 }
+.modal-avail-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
 .modal-avail-label {
   display: inline-block;
   font-size: 11px;
-  color: var(--green-bright);
-  font-weight: 600;
-  letter-spacing: .04em;
-  margin-bottom: 8px;
+  color: white;
+  background: var(--green-mid);
+  font-weight: 700;
+  letter-spacing: .06em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+.modal-avail-date {
+  font-size: 11px;
+  color: var(--text-light);
 }
 .modal-avail-chips {
   display: flex;
@@ -83,16 +96,29 @@
 .modal-avail-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: var(--green-mist);
   border: 1.5px solid var(--green-pale);
   border-radius: var(--radius-sm);
-  padding: 5px 10px;
+  padding: 7px 12px;
   font-size: 12px;
 }
-.modal-avail-size { color: var(--text-mid); font-weight: 500; }
-.modal-avail-price { color: var(--green-deep); font-weight: 700; }
-.modal-avail-qty { color: var(--text-light); font-size: 10px; }
+.modal-avail-size {
+  color: var(--text-mid);
+  font-weight: 600;
+}
+.modal-avail-price {
+  color: var(--green-deep);
+  font-weight: 800;
+  font-size: 14px;
+}
+.modal-avail-qty {
+  color: var(--text-light);
+  font-size: 10px;
+  background: var(--cream-dark);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
 
 /* Wishlist button in modal header */
 .modal-wishlist-btn {

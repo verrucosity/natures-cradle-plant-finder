@@ -47,6 +47,75 @@
   border-radius: 20px;
 }
 
+/* In-stock badge on image */
+.card-instock-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 10px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #fff;
+  background: rgba(45,90,39,.85);
+  backdrop-filter: blur(4px);
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+/* In-stock badge inline (no-image fallback) */
+.card-category-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 5px;
+}
+.card-instock-badge-inline {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--green-mid);
+  background: var(--green-mist);
+  border: 1px solid var(--green-pale);
+  padding: 2px 7px;
+  border-radius: 20px;
+}
+
+/* Availability chips on card */
+.card-avail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+.card-avail-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--green-mist);
+  border: 1px solid var(--green-pale);
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 10px;
+}
+.card-avail-size {
+  color: var(--text-mid);
+  font-weight: 500;
+}
+.card-avail-price {
+  color: var(--green-deep);
+  font-weight: 700;
+}
+
+/* "From $X" in footer */
+.card-from-price {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--green-deep);
+  white-space: nowrap;
+}
+
 /* Heart button (on image) */
 .card-heart {
   position: absolute;

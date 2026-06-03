@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useWishlist } from '../context/WishlistContext';
 import './PlantCard.css';
 
+function parsePrice(str) {
+  return parseFloat((str || '').replace(/[$,]/g, '')) || Infinity;
+}
+
 export default function PlantCard({ plant, onOpen }) {
   const catClass = 'cat-' + plant.category.toLowerCase().replace(/[^a-z]/g, '');
   const [imgError, setImgError] = useState(false);
@@ -9,6 +13,12 @@ export default function PlantCard({ plant, onOpen }) {
 
   const { isInWishlist, toggleWishlist } = useWishlist();
   const wishlisted = isInWishlist(plant.id);
+
+  const avail = plant.availability || [];
+  const inStock = avail.length > 0;
+  const lowestPrice = inStock
+    ? avail.reduce((min, a) => parsePrice(a.price) < parsePrice(min.price) ? a : min, avail[0])
+    : null;
 
   function handleWishlist(e) {
     e.stopPropagation();
@@ -27,6 +37,9 @@ export default function PlantCard({ plant, onOpen }) {
             onError={() => setImgError(true)}
           />
           <span className={`card-img-category-badge ${catClass}`}>{plant.category}</span>
+          {inStock && (
+            <span className="card-instock-badge">✓ In Stock</span>
+          )}
           <button
             className={`card-heart${wishlisted ? ' active' : ''}`}
             onClick={handleWishlist}
@@ -42,7 +55,12 @@ export default function PlantCard({ plant, onOpen }) {
       )}
 
       <div className="card-body">
-        {!showImg && <div className="card-category">{plant.category}</div>}
+        {!showImg && (
+          <div className="card-category-row">
+            <span className="card-category">{plant.category}</span>
+            {inStock && <span className="card-instock-badge-inline">✓ In Stock</span>}
+          </div>
+        )}
         <div className="card-name">{plant.name}</div>
         {plant.desc && <div className="card-desc">{plant.desc}</div>}
         <div className="card-attrs">
@@ -56,6 +74,18 @@ export default function PlantCard({ plant, onOpen }) {
             <span key={z} className="attr-pill zone">{z}</span>
           ))}
         </div>
+
+        {/* Availability sizes + prices */}
+        {inStock && (
+          <div className="card-avail">
+            {avail.map((a, i) => (
+              <span key={i} className="card-avail-chip">
+                <span className="card-avail-size">{a.size}</span>
+                <span className="card-avail-price">{a.price}</span>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="card-footer">
@@ -66,6 +96,9 @@ export default function PlantCard({ plant, onOpen }) {
           {plant.height || '—'}
         </span>
         <div className="card-footer-actions">
+          {inStock && lowestPrice && (
+            <span className="card-from-price">from {lowestPrice.price}</span>
+          )}
           {!showImg && (
             <button
               className={`card-heart-bare${wishlisted ? ' active' : ''}`}
