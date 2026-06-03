@@ -54,6 +54,23 @@ export default function PlantModal({ plant, onClose }) {
           </button>
           <div className="modal-cat">{plant.category}</div>
           <div className="modal-name">{plant.name}</div>
+          {plant.availability?.length > 0 && (
+            <div className="modal-availability">
+              <span className="modal-avail-label">
+                ✓ In Stock · Updated {plant.availabilityDate}
+              </span>
+              <div className="modal-avail-chips">
+                {plant.availability.map((a, i) => (
+                  <span key={i} className="modal-avail-chip">
+                    <span className="modal-avail-size">{a.size}</span>
+                    <span className="modal-avail-price">{a.price}</span>
+                    {a.qty && !isNaN(Number(a.qty)) &&
+                      <span className="modal-avail-qty">{Number(a.qty)} avail.</span>}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
           <button
             className={`modal-wishlist-btn${wishlisted ? ' active' : ''}`}
             onClick={() => {

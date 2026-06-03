@@ -1,0 +1,161 @@
+/**
+ * matchPlants.js
+ * Fuzzy-matches PDF botanical names to the plants catalog.
+ *
+ * Strategy (in order of priority):
+ * 1. Exact normalized match
+ * 2. Cultivar match — extract quoted name, find plants containing it
+ * 3. Token overlap — genus + species token match
+ */
+
+function normalize(str) {
+  return str
+    .toUpperCase()
+    .replace(/[''""]/g, '')          // remove quotes
+    .replace(/\bX\b/g, '')           // remove hybrid marker
+    .replace(/[^A-Z0-9\s]/g, ' ')   // remove punctuation
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function extractCultivar(name) {
+  // Match content in single or double quotes
+  const m = name.match(/[''"]([^''"]+)[''"]/) || name.match(/'([^']+)'/);
+  return m ? m[1].toUpperCase().trim() : null;
+}
+
+function tokenSet(str) {
+  return new Set(normalize(str).split(' ').filter(t => t.length > 2));
+}
+
+function tokenOverlap(a, b) {
+  const sa = tokenSet(a);
+  const sb = tokenSet(b);
+  let overlap = 0;
+  for (const t of sa) if (sb.has(t)) overlap++;
+  return overlap / Math.max(sa.size, sb.size, 1);
+}
+
+/**
+ * Build a lookup index from the catalog for fast matching.
+ */
+export function buildIndex(plants) {
+  const index = {
+    byNorm:     new Map(), // normalized name → plant[]
+    byCultivar: new Map(), // cultivar name → plant[]
+    byGenus:    new Map(), // genus → plant[]
+  };
+
+  for (const plant of plants) {
+    const norm = normalize(plant.name);
+    if (!index.byNorm.has(norm)) index.byNorm.set(norm, []);
+    index.byNorm.get(norm).push(plant);
+
+    const cult = extractCultivar(plant.name);
+    if (cult) {
+      if (!index.byCultivar.has(cult)) index.byCultivar.set(cult, []);
+      index.byCultivar.get(cult).push(plant);
+    }
+
+    const genus = normalize(plant.name).split(' ')[0];
+    if (!index.byGenus.has(genus)) index.byGenus.set(genus, []);
+    index.byGenus.get(genus).push(plant);
+  }
+
+  return index;
+}
+
+/**
+ * Find best matching plant for a PDF entry name.
+ * Returns { plant, score, method } or null.
+ */
+export function findMatch(pdfName, index, plants) {
+  const norm = normalize(pdfName);
+  const cult = extractCultivar(pdfName);
+  const genus = norm.split(' ')[0];
+
+  // 1. Exact normalized match
+  if (index.byNorm.has(norm)) {
+    return { plant: index.byNorm.get(norm)[0], score: 1.0, method: 'exact' };
+  }
+
+  // 2. Cultivar match — if PDF has a cultivar name in quotes
+  if (cult && index.byCultivar.has(cult)) {
+    const candidates = index.byCultivar.get(cult);
+    // Among cultivar matches, prefer same genus
+    const sameGenus = candidates.filter(p => normalize(p.name).startsWith(genus));
+    const best = sameGenus.length ? sameGenus[0] : candidates[0];
+    return { plant: best, score: 0.9, method: 'cultivar' };
+  }
+
+  // 3. Token overlap within same genus
+  const genusCandidates = index.byGenus.get(genus) || [];
+  if (genusCandidates.length) {
+    let best = null, bestScore = 0;
+    for (const plant of genusCandidates) {
+      const score = tokenOverlap(pdfName, plant.name);
+      if (score > bestScore) { bestScore = score; best = plant; }
+    }
+    if (best && bestScore >= 0.4) {
+      return { plant: best, score: bestScore, method: 'token' };
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Main function: given PDF entries and catalog plants,
+ * returns updated plants array with price/size data merged in.
+ *
+ * Each matched plant gets:
+ *   plant.availability = [{ size, price, qty, details }]  (sorted by size)
+ *   plant.availabilityDate = "YYYY-MM-DD"
+ */
+export function mergePrices(plants, pdfEntries) {
+  const index = buildIndex(plants);
+
+  // Group PDF entries by matched plant id
+  const byPlantId = new Map(); // plant.id → [entries]
+  let matched = 0, unmatched = 0;
+  const unmatchedNames = new Set();
+
+  for (const entry of pdfEntries) {
+    const result = findMatch(entry.name, index, plants);
+    if (result) {
+      matched++;
+      if (!byPlantId.has(result.plant.id)) byPlantId.set(result.plant.id, []);
+      byPlantId.get(result.plant.id).push({ ...entry, _method: result.method });
+    } else {
+      unmatched++;
+      unmatchedNames.add(entry.name);
+    }
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  const updated = plants.map(plant => {
+    const entries = byPlantId.get(plant.id);
+    if (!entries) return plant;
+
+    const availability = entries.map(e => ({
+      size:    e.size,
+      price:   e.price,
+      qty:     e.qty,
+      details: e.details,
+    }));
+
+    return { ...plant, availability, availabilityDate: today };
+  });
+
+  return {
+    plants: updated,
+    stats: {
+      totalPDFEntries: pdfEntries.length,
+      matched,
+      unmatched,
+      plantsWithPrices: byPlantId.size,
+      unmatchedSample: [...unmatchedNames].slice(0, 20),
+    },
+  };
+}

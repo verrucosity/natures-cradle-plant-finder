@@ -63,6 +63,37 @@
   color: var(--text-dark);
   margin-bottom: 4px;
 }
+/* Availability / pricing */
+.modal-availability {
+  margin-top: 12px;
+}
+.modal-avail-label {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--green-bright);
+  font-weight: 600;
+  letter-spacing: .04em;
+  margin-bottom: 8px;
+}
+.modal-avail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.modal-avail-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-mist);
+  border: 1.5px solid var(--green-pale);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  font-size: 12px;
+}
+.modal-avail-size { color: var(--text-mid); font-weight: 500; }
+.modal-avail-price { color: var(--green-deep); font-weight: 700; }
+.modal-avail-qty { color: var(--text-light); font-size: 10px; }
+
 /* Wishlist button in modal header */
 .modal-wishlist-btn {
   display: inline-flex;

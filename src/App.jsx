@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { WishlistProvider } from './context/WishlistContext';
+import AdminPage from './pages/AdminPage';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import SearchBar from './components/SearchBar';
@@ -61,6 +62,10 @@ function AppInner() {
 }
 
 export default function App() {
+  // Simple client-side routing for /admin
+  if (window.location.pathname === '/admin') {
+    return <AdminPage />;
+  }
   return (
     <WishlistProvider>
       <AppInner />
