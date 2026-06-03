@@ -6,10 +6,10 @@
  */
 
 import * as pdfjsLib from 'pdfjs-dist';
+import pdfjsWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
-// Use CDN worker to avoid bundler issues with the worker file
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// Use the bundled worker via Vite's ?url import (avoids CDN/version mismatch issues)
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorkerUrl;
 
 const HEADER_STRINGS = new Set([
   'botanical name', 'pot size/caliper', 'quantity/status',
