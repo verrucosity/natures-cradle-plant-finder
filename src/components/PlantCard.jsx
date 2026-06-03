@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useWishlist } from '../context/WishlistContext';
+import SizePicker from './SizePicker';
 import './PlantCard.css';
 
 function parsePrice(str) {
@@ -13,6 +14,7 @@ export default function PlantCard({ plant, onOpen }) {
 
   const { isInWishlist, toggleWishlist } = useWishlist();
   const wishlisted = isInWishlist(plant.id);
+  const [showPicker, setShowPicker] = useState(false);
 
   const avail = plant.availability || [];
   const availWithSize = avail.filter(a => a.size && !/^\d+$/.test(a.size));
@@ -23,10 +25,22 @@ export default function PlantCard({ plant, onOpen }) {
 
   function handleWishlist(e) {
     e.stopPropagation();
-    toggleWishlist(plant);
+    if (wishlisted) {
+      toggleWishlist(plant);        // remove directly
+    } else if (availWithSize.length > 0) {
+      setShowPicker(true);           // show size picker first
+    } else {
+      toggleWishlist(plant);        // no sizes, add directly
+    }
+  }
+
+  function handleSizeSelect(sizeObj) {
+    toggleWishlist(plant, sizeObj);
+    setShowPicker(false);
   }
 
   return (
+    <>
     <div className="card" onClick={() => onOpen(plant)}>
       {showImg ? (
         <div className="card-img-wrap">
@@ -120,5 +134,14 @@ export default function PlantCard({ plant, onOpen }) {
         </div>
       </div>
     </div>
+
+    {showPicker && (
+      <SizePicker
+        plant={plant}
+        onSelect={handleSizeSelect}
+        onClose={() => setShowPicker(false)}
+      />
+    )}
+    </>
   );
 }

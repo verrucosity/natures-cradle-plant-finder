@@ -12,11 +12,16 @@ export function WishlistProvider({ children }) {
     [items]
   );
 
-  const toggleWishlist = useCallback(plant => {
+  const toggleWishlist = useCallback((plant, selectedSize = null) => {
     setItems(prev => {
       const exists = prev.some(i => i.plant.id === plant.id);
       if (exists) return prev.filter(i => i.plant.id !== plant.id);
-      return [...prev, { plant, qty: 1, size: '' }];
+      return [...prev, {
+        plant,
+        qty: 1,
+        size: selectedSize?.size || '',
+        price: selectedSize?.price || '',
+      }];
     });
   }, []);
 

@@ -2,12 +2,27 @@ import { useState } from 'react';
 import { useWishlist } from '../context/WishlistContext';
 import './WishlistDrawer.css';
 
-const SIZES = ['Any / Not Sure', '1 Gallon', '3 Gallon', '5 Gallon', '7 Gallon', 'B&B', 'Other'];
+const GENERIC_SIZES = ['Any / Not Sure', '1 Gallon', '3 Gallon', '5 Gallon', '7 Gallon', 'B&B', 'Other'];
 
 function WishlistItem({ item }) {
   const { removeItem, updateItem } = useWishlist();
-  const { plant, qty, size } = item;
+  const { plant, qty, size, price } = item;
   const [imgErr, setImgErr] = useState(false);
+
+  // Use actual availability sizes if the plant has them
+  const availSizes = (plant.availability || []).filter(a => a.size && !/^\d+$/.test(a.size));
+  const hasRealSizes = availSizes.length > 0;
+
+  function handleSizeChange(e) {
+    const newSize = e.target.value;
+    const match = availSizes.find(a => a.size === newSize);
+    updateItem(plant.id, 'size', newSize);
+    updateItem(plant.id, 'price', match?.price || '');
+  }
+
+  // Find price for currently selected size
+  const selectedAvail = availSizes.find(a => a.size === size);
+  const displayPrice = price || selectedAvail?.price || '';
 
   return (
     <div className="wl-item">
@@ -36,11 +51,25 @@ function WishlistItem({ item }) {
           <select
             className="wl-size-select"
             value={size}
-            onChange={e => updateItem(plant.id, 'size', e.target.value)}
+            onChange={handleSizeChange}
           >
-            {SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+            {hasRealSizes ? (
+              <>
+                <option value="">Any / Not Sure</option>
+                {availSizes.map(a => (
+                  <option key={a.size} value={a.size}>
+                    {a.size} — {a.price}
+                  </option>
+                ))}
+              </>
+            ) : (
+              GENERIC_SIZES.map(s => <option key={s} value={s}>{s}</option>)
+            )}
           </select>
         </div>
+        {displayPrice && size && (
+          <div className="wl-item-price">{displayPrice} each</div>
+        )}
       </div>
       <button className="wl-item-remove" onClick={() => removeItem(plant.id)} aria-label="Remove">
         <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

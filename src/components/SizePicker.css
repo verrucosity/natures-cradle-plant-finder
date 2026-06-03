@@ -1,0 +1,131 @@
+.sp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(26,46,26,.4);
+  backdrop-filter: blur(2px);
+  animation: spFade .15s ease;
+}
+@keyframes spFade { from { opacity: 0 } to { opacity: 1 } }
+
+.sp-card {
+  background: var(--white);
+  border-radius: 14px;
+  box-shadow: 0 16px 48px rgba(0,0,0,.22);
+  width: 100%;
+  max-width: 360px;
+  animation: spSlide .18s ease;
+  overflow: hidden;
+}
+@keyframes spSlide {
+  from { transform: translateY(12px); opacity: 0 }
+  to   { transform: translateY(0);    opacity: 1 }
+}
+
+.sp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 10px;
+  border-bottom: 1px solid var(--cream-dark);
+}
+.sp-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  color: var(--text-dark);
+}
+.sp-close {
+  width: 28px; height: 28px;
+  border: none;
+  background: var(--cream);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  transition: background .15s;
+}
+.sp-close:hover { background: var(--cream-dark); }
+
+.sp-plant-name {
+  font-size: 12px;
+  color: var(--text-light);
+  padding: 8px 16px 12px;
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-sizes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 12px 12px;
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.sp-size-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--cream);
+  border: 1.5px solid var(--cream-dark);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .15s, background .15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.sp-size-btn:hover {
+  border-color: var(--green-bright);
+  background: var(--green-mist);
+}
+
+.sp-size-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+.sp-size-price {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--green-deep);
+}
+.sp-size-qty {
+  font-size: 10px;
+  color: var(--text-light);
+  background: var(--cream-dark);
+  padding: 2px 6px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.sp-skip {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 0 12px 12px;
+  padding: 9px;
+  background: none;
+  border: 1.5px dashed var(--cream-dark);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.sp-skip:hover {
+  border-color: var(--green-bright);
+  color: var(--green-mid);
+}

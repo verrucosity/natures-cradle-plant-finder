@@ -206,6 +206,13 @@
   outline: none;
   max-width: 120px;
 }
+.wl-item-price {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green-deep);
+  margin-top: 5px;
+}
+
 .wl-item-remove {
   position: absolute;
   top: 8px; right: 8px;

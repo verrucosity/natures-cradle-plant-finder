@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useWishlist } from '../context/WishlistContext';
+import SizePicker from './SizePicker';
 import './PlantModal.css';
 
 function ModalImage({ src, alt }) {
@@ -14,8 +15,10 @@ function ModalImage({ src, alt }) {
 
 export default function PlantModal({ plant, onClose }) {
   const [submitted, setSubmitted] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
   const { isInWishlist, toggleWishlist, setDrawerOpen } = useWishlist();
   const wishlisted = isInWishlist(plant?.id);
+  const availWithSize = (plant?.availability || []).filter(a => a.size && !/^\d+$/.test(a.size));
 
   if (!plant) return null;
 
@@ -43,7 +46,22 @@ export default function PlantModal({ plant, onClose }) {
     if (e.target === e.currentTarget) onClose();
   }
 
+  function handleSizeSelect(sizeObj) {
+    toggleWishlist(plant, sizeObj);
+    setShowPicker(false);
+    onClose();
+    setDrawerOpen(true);
+  }
+
   return (
+    <>
+    {showPicker && (
+      <SizePicker
+        plant={plant}
+        onSelect={handleSizeSelect}
+        onClose={() => setShowPicker(false)}
+      />
+    )}
     <div className="modal-overlay open" onClick={handleOverlayClick}>
       <div className="modal">
         <div className="modal-header">
@@ -75,8 +93,15 @@ export default function PlantModal({ plant, onClose }) {
           <button
             className={`modal-wishlist-btn${wishlisted ? ' active' : ''}`}
             onClick={() => {
-              toggleWishlist(plant);
-              if (!wishlisted) { onClose(); setDrawerOpen(true); }
+              if (wishlisted) {
+                toggleWishlist(plant);
+              } else if (availWithSize.length > 0) {
+                setShowPicker(true);
+              } else {
+                toggleWishlist(plant);
+                onClose();
+                setDrawerOpen(true);
+              }
             }}
           >
             <svg width="14" height="14" fill={wishlisted ? '#f28b82' : 'none'} stroke={wishlisted ? '#f28b82' : 'currentColor'} strokeWidth="2" viewBox="0 0 24 24">
@@ -158,5 +183,6 @@ export default function PlantModal({ plant, onClose }) {
         </div>
       </div>
     </div>
+    </>
   );
 }
