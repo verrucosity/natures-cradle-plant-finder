@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useWishlist } from '../context/WishlistContext';
 import './PlantModal.css';
 
 function ModalImage({ src, alt }) {
@@ -13,6 +14,8 @@ function ModalImage({ src, alt }) {
 
 export default function PlantModal({ plant, onClose }) {
   const [submitted, setSubmitted] = useState(false);
+  const { isInWishlist, toggleWishlist, setDrawerOpen } = useWishlist();
+  const wishlisted = isInWishlist(plant?.id);
 
   if (!plant) return null;
 
@@ -51,6 +54,18 @@ export default function PlantModal({ plant, onClose }) {
           </button>
           <div className="modal-cat">{plant.category}</div>
           <div className="modal-name">{plant.name}</div>
+          <button
+            className={`modal-wishlist-btn${wishlisted ? ' active' : ''}`}
+            onClick={() => {
+              toggleWishlist(plant);
+              if (!wishlisted) { onClose(); setDrawerOpen(true); }
+            }}
+          >
+            <svg width="14" height="14" fill={wishlisted ? '#f28b82' : 'none'} stroke={wishlisted ? '#f28b82' : 'currentColor'} strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            {wishlisted ? 'Added to Wishlist ✓' : 'Add to Wishlist'}
+          </button>
         </div>
 
         <div className="modal-body">

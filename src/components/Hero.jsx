@@ -4,10 +4,10 @@ export default function Hero({ totalCount }) {
   return (
     <section className="hero">
       <div className="hero-inner">
-        <h1>Find the <em>perfect plant</em><br />for your landscape</h1>
+        <h1>Your <em>plant wishlist</em><br />starts here</h1>
         <p>
-          Browse our master catalog of {totalCount.toLocaleString()}+ varieties. Filter by light, hardiness
-          zone, height, soil, and more — then request a quote from our team.
+          Browse {totalCount.toLocaleString()}+ varieties from Nature's Cradle. Filter by light, zone,
+          height, soil, and more — heart the ones you love, then send us your wishlist and we'll reach out to finalize.
         </p>
         <div className="hero-stats">
           <div className="hero-stat"><strong>{totalCount.toLocaleString()}</strong><span>Plant Varieties</span></div>

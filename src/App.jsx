@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { WishlistProvider } from './context/WishlistContext';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import SearchBar from './components/SearchBar';
@@ -6,10 +7,11 @@ import Sidebar from './components/Sidebar';
 import PlantGrid from './components/PlantGrid';
 import Pagination from './components/Pagination';
 import PlantModal from './components/PlantModal';
+import WishlistDrawer from './components/WishlistDrawer';
 import usePlants from './hooks/usePlants';
 import './App.css';
 
-export default function App() {
+function AppInner() {
   const {
     query, handleQuery,
     active, toggleFilter, removeFilter, clearAll,
@@ -36,7 +38,6 @@ export default function App() {
 
       <div className="layout">
         <Sidebar options={options} active={active} onToggle={toggleFilter} />
-
         <div className="layout-right">
           <PlantGrid
             plants={paginated}
@@ -53,6 +54,16 @@ export default function App() {
       {modalPlant && (
         <PlantModal plant={modalPlant} onClose={() => setModalPlant(null)} />
       )}
+
+      <WishlistDrawer />
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <WishlistProvider>
+      <AppInner />
+    </WishlistProvider>
   );
 }

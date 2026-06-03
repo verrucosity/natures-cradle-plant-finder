@@ -47,6 +47,46 @@
   border-radius: 20px;
 }
 
+/* Heart button (on image) */
+.card-heart {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(26,46,26,.5);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .18s, transform .15s;
+}
+.card-heart:hover { background: rgba(26,46,26,.75); transform: scale(1.1); }
+.card-heart.active { background: rgba(255,255,255,.85); }
+
+/* Heart button (no-image fallback in footer) */
+.card-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card-heart-bare {
+  width: 30px; height: 30px;
+  border: 1.5px solid var(--cream-dark);
+  border-radius: 50%;
+  background: var(--white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .15s, background .15s;
+}
+.card-heart-bare:hover { border-color: #f28b82; background: #fff5f5; }
+.card-heart-bare.active { border-color: #f28b82; background: #fff5f5; }
+
 /* ── Color bar (no-image fallback) ── */
 .card-color-bar {
   height: 5px;

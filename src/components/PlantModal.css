@@ -63,6 +63,34 @@
   color: var(--text-dark);
   margin-bottom: 4px;
 }
+/* Wishlist button in modal header */
+.modal-wishlist-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 12px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  border: 1.5px solid var(--cream-dark);
+  background: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all .18s;
+}
+.modal-wishlist-btn:hover {
+  border-color: #f28b82;
+  color: #c0392b;
+  background: #fff5f5;
+}
+.modal-wishlist-btn.active {
+  border-color: #f28b82;
+  background: #fff5f5;
+  color: #c0392b;
+}
+
 .modal-body { padding: 20px 24px; }
 
 .modal-img-wrap {
