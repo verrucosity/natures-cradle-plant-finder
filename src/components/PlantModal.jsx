@@ -61,11 +61,9 @@ export default function PlantModal({ plant, onClose }) {
                 <span className="modal-avail-date">Updated {plant.availabilityDate}</span>
               </div>
               <div className="modal-avail-chips">
-                {plant.availability.map((a, i) => (
+                {plant.availability.filter(a => a.size && !/^\d+$/.test(a.size)).map((a, i) => (
                   <span key={i} className="modal-avail-chip">
-                    {a.size && !/^\d+$/.test(a.size) && (
-                      <span className="modal-avail-size">{a.size}</span>
-                    )}
+                    <span className="modal-avail-size">{a.size}</span>
                     <span className="modal-avail-price">{a.price}</span>
                     {a.qty && !isNaN(Number(a.qty)) && Number(a.qty) > 0 &&
                       <span className="modal-avail-qty">{Number(a.qty)} avail.</span>}

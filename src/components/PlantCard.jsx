@@ -15,9 +15,10 @@ export default function PlantCard({ plant, onOpen }) {
   const wishlisted = isInWishlist(plant.id);
 
   const avail = plant.availability || [];
-  const inStock = avail.length > 0;
+  const availWithSize = avail.filter(a => a.size && !/^\d+$/.test(a.size));
+  const inStock = availWithSize.length > 0;
   const lowestPrice = inStock
-    ? avail.reduce((min, a) => parsePrice(a.price) < parsePrice(min.price) ? a : min, avail[0])
+    ? availWithSize.reduce((min, a) => parsePrice(a.price) < parsePrice(min.price) ? a : min, availWithSize[0])
     : null;
 
   function handleWishlist(e) {
@@ -76,13 +77,11 @@ export default function PlantCard({ plant, onOpen }) {
         </div>
 
         {/* Availability sizes + prices */}
-        {inStock && (
+        {inStock && avail.some(a => a.size && !/^\d+$/.test(a.size)) && (
           <div className="card-avail">
-            {avail.map((a, i) => (
+            {avail.filter(a => a.size && !/^\d+$/.test(a.size)).map((a, i) => (
               <span key={i} className="card-avail-chip">
-                {a.size && !/^\d+$/.test(a.size) && (
-                  <span className="card-avail-size">{a.size}</span>
-                )}
+                <span className="card-avail-size">{a.size}</span>
                 <span className="card-avail-price">{a.price}</span>
               </span>
             ))}
