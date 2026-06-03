@@ -112,9 +112,16 @@ export async function parsePDF(file, onProgress) {
       const price = normalizePrice(priceRaw);
       if (!price) continue; // skip rows without a price
 
+      // Clean size: strip trailing standalone numbers (those are quantities bleeding in)
+      // e.g. "#2/ 8-10' 75" → "#2/ 8-10'"
+      const cleanSize = (size || '').replace(/\s+\d+$/, '').trim();
+
+      // If size is purely numeric or empty, it's actually a qty — leave size blank
+      const sizeIsNumeric = /^\d+$/.test(cleanSize);
+
       entries.push({
         name:    name.toUpperCase().trim(),
-        size:    size?.trim() || '',
+        size:    sizeIsNumeric ? '' : cleanSize,
         qty:     qty?.trim() || '',
         details: details?.trim() || '',
         price,

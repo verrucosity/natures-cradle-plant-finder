@@ -80,7 +80,9 @@ export default function PlantCard({ plant, onOpen }) {
           <div className="card-avail">
             {avail.map((a, i) => (
               <span key={i} className="card-avail-chip">
-                <span className="card-avail-size">{a.size}</span>
+                {a.size && !/^\d+$/.test(a.size) && (
+                  <span className="card-avail-size">{a.size}</span>
+                )}
                 <span className="card-avail-price">{a.price}</span>
               </span>
             ))}
