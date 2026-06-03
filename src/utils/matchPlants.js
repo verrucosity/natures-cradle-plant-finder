@@ -138,12 +138,20 @@ export function mergePrices(plants, pdfEntries) {
     const entries = byPlantId.get(plant.id);
     if (!entries) return plant;
 
-    const availability = entries.map(e => ({
-      size:    e.size,
-      price:   e.price,
-      qty:     e.qty,
-      details: e.details,
-    }));
+    // Deduplicate by size — keep the highest price per size
+    const bySize = new Map();
+    for (const e of entries) {
+      const sizeKey = (e.size || '').trim().toLowerCase();
+      if (!sizeKey) continue; // skip entries with no size
+      const existing = bySize.get(sizeKey);
+      const newPrice  = parseFloat((e.price  || '').replace(/[$,]/g, '')) || 0;
+      const prevPrice = parseFloat((existing?.price || '').replace(/[$,]/g, '')) || 0;
+      if (!existing || newPrice > prevPrice) {
+        bySize.set(sizeKey, { size: e.size, price: e.price, qty: e.qty, details: e.details });
+      }
+    }
+
+    const availability = [...bySize.values()];
 
     return { ...plant, availability, availabilityDate: today };
   });
