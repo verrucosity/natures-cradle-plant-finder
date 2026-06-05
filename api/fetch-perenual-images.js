@@ -16,23 +16,36 @@ const BATCH        = 90;
 const DELAY_MS     = 450;
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function getGenus(name) { return name.split(' ')[0].toLowerCase(); }
 
-function cleanName(name) {
-  return name
-    .replace(/\s*['''][^''']+[''']/, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-async function searchPerenual(name) {
-  const url = `https://perenual.com/api/species-list?key=${PERENUAL_KEY}&q=${encodeURIComponent(name)}&page=1`;
+async function searchPerenual(query) {
+  const url = `https://perenual.com/api/species-list?key=${PERENUAL_KEY}&q=${encodeURIComponent(query)}&page=1`;
   const res  = await fetch(url, { headers: { 'User-Agent': 'NaturesCradlePlantFinder/1.0' } });
   if (res.status === 429 || !res.ok) return null;
   const data = await res.json();
   const best = data?.data?.[0];
   const img  = best?.default_image?.medium_url || best?.default_image?.regular_url || best?.default_image?.small_url;
-  if (!img || img.includes('upgrade_plan')) return null;
-  return img;
+  return (!img || img.includes('upgrade_plan')) ? null : img;
+}
+
+async function findImage(plant, usedUrlsByGenus) {
+  const words    = plant.name.replace(/['''"]/g, ' ').replace(/\s+/g, ' ').trim().split(' ');
+  const genus    = getGenus(plant.name);
+  const usedUrls = usedUrlsByGenus.get(genus) || new Set();
+
+  const candidates = [
+    plant.name.replace(/['''"]/g, '').trim(),
+    words.slice(0, 3).join(' '),
+    words.slice(0, 2).join(' '),
+    words[0],
+  ];
+
+  for (const query of [...new Set(candidates)]) {
+    const img = await searchPerenual(query);
+    if (!img || usedUrls.has(img)) continue;
+    return img;
+  }
+  return null;
 }
 
 async function getGitHubFile(path) {
@@ -91,16 +104,29 @@ export default async function handler(req, res) {
       return res.status(200).json({ message: 'All plants have images — nothing to do!', total: plants.length });
     }
 
+    // Build genus → used image URLs map to prevent duplicates
+    const usedUrlsByGenus = new Map();
+    for (const p of plants) {
+      if (p.imageUrl) {
+        const g = getGenus(p.name);
+        if (!usedUrlsByGenus.has(g)) usedUrlsByGenus.set(g, new Set());
+        usedUrlsByGenus.get(g).add(p.imageUrl);
+      }
+    }
+
     const batch = needImage.slice(0, BATCH);
     let hits = 0, misses = 0;
 
     for (let i = 0; i < batch.length; i++) {
       const plant = batch[i];
-      const imageUrl = await searchPerenual(cleanName(plant.name));
+      const genus = getGenus(plant.name);
+      const imageUrl = await findImage(plant, usedUrlsByGenus);
 
       if (imageUrl) {
         const idx = plants.findIndex(p => p.id === plant.id);
         if (idx !== -1) plants[idx] = { ...plants[idx], imageUrl };
+        if (!usedUrlsByGenus.has(genus)) usedUrlsByGenus.set(genus, new Set());
+        usedUrlsByGenus.get(genus).add(imageUrl);
         hits++;
       } else {
         misses++;
