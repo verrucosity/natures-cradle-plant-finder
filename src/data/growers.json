@@ -1,0 +1,86 @@
+{
+  "activeGrowers": [
+    {
+      "id": "prides-corner",
+      "name": "Prides Corner Farms",
+      "location": "Lebanon, CT",
+      "distanceMiles": 82,
+      "multiplier": 2.0,
+      "notes": "Large woody ornamentals, trees & shrubs"
+    },
+    {
+      "id": "deans",
+      "name": "Deans",
+      "location": "Connecticut",
+      "distanceMiles": 75,
+      "multiplier": 2.0,
+      "notes": ""
+    },
+    {
+      "id": "fernbrook",
+      "name": "Fernbrook Farms",
+      "location": "Leesburg, NJ",
+      "distanceMiles": 88,
+      "multiplier": 2.0,
+      "notes": "Perennials & ornamental grasses"
+    },
+    {
+      "id": "tuckahoe",
+      "name": "Tuckahoe Nursery",
+      "location": "New York",
+      "distanceMiles": 30,
+      "multiplier": 2.0,
+      "notes": ""
+    },
+    {
+      "id": "ithilien",
+      "name": "Ithilien Farm",
+      "location": "New York",
+      "distanceMiles": 45,
+      "multiplier": 2.0,
+      "notes": ""
+    },
+    {
+      "id": "glover",
+      "name": "Glover Nurseries",
+      "location": "Connecticut",
+      "distanceMiles": 70,
+      "multiplier": 2.0,
+      "notes": ""
+    },
+    {
+      "id": "perennial-farm",
+      "name": "Perennial Farm",
+      "location": "New Jersey",
+      "distanceMiles": 65,
+      "multiplier": 2.0,
+      "notes": "Perennials specialist"
+    },
+    {
+      "id": "johns-farm",
+      "name": "John's Farm",
+      "location": "New Jersey",
+      "distanceMiles": 55,
+      "multiplier": 2.0,
+      "notes": ""
+    },
+    {
+      "id": "edgar-joyce",
+      "name": "Edgar Joyce Nurseries",
+      "location": "New Jersey",
+      "distanceMiles": 60,
+      "multiplier": 2.0,
+      "notes": ""
+    },
+    {
+      "id": "sunset",
+      "name": "Sunset Nursery",
+      "location": "Connecticut",
+      "distanceMiles": 72,
+      "multiplier": 2.0,
+      "notes": ""
+    }
+  ],
+  "defaultMultiplier": 2.0,
+  "baseLocation": "Eastchester, NY"
+}

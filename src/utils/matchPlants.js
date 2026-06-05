@@ -104,6 +104,14 @@ export function findMatch(pdfName, index, plants) {
   return null;
 }
 
+function applyMultiplier(priceStr, multiplier) {
+  if (!multiplier || multiplier === 1) return priceStr;
+  const raw = parseFloat((priceStr || '').replace(/[$,]/g, ''));
+  if (!raw) return priceStr;
+  const retail = raw * multiplier;
+  return '$' + retail.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 /**
  * Main function: given PDF entries and catalog plants,
  * returns updated plants array with price/size data merged in.
@@ -111,8 +119,13 @@ export function findMatch(pdfName, index, plants) {
  * Each matched plant gets:
  *   plant.availability = [{ size, price, qty, details }]  (sorted by size)
  *   plant.availabilityDate = "YYYY-MM-DD"
+ *
+ * @param {object[]} plants - catalog
+ * @param {object[]} pdfEntries - parsed from PDF
+ * @param {number} multiplier - wholesale → retail multiplier (default 2.0)
+ * @param {string} growerId - which grower this upload is from
  */
-export function mergePrices(plants, pdfEntries) {
+export function mergePrices(plants, pdfEntries, multiplier = 2.0, growerId = 'default') {
   const index = buildIndex(plants);
 
   // Group PDF entries by matched plant id
@@ -145,9 +158,16 @@ export function mergePrices(plants, pdfEntries) {
       if (!sizeKey) continue; // skip entries with no size
       const existing = bySize.get(sizeKey);
       const newPrice  = parseFloat((e.price  || '').replace(/[$,]/g, '')) || 0;
-      const prevPrice = parseFloat((existing?.price || '').replace(/[$,]/g, '')) || 0;
+      const prevPrice = parseFloat((existing?.wholesalePrice || '').replace(/[$,]/g, '')) || 0;
       if (!existing || newPrice > prevPrice) {
-        bySize.set(sizeKey, { size: e.size, price: e.price, qty: e.qty, details: e.details });
+        bySize.set(sizeKey, {
+          size:          e.size,
+          wholesalePrice: e.price,
+          price:         applyMultiplier(e.price, multiplier),
+          qty:           e.qty,
+          details:       e.details,
+          growerId,
+        });
       }
     }
 

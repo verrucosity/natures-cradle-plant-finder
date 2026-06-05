@@ -1,0 +1,17 @@
+[
+  { "id": "pleasant-run", "name": "Pleasant Run Nursery", "location": "Allentown, NJ", "distanceMiles": 62, "specialty": "Woodies, shade trees" },
+  { "id": "ramapo-valley", "name": "Ramapo Valley Nursery", "location": "Mahwah, NJ", "distanceMiles": 22, "specialty": "General nursery stock" },
+  { "id": "broken-arrow", "name": "Broken Arrow Nursery", "location": "Hamden, CT", "distanceMiles": 71, "specialty": "Rare woodies & perennials" },
+  { "id": "cricket-hill", "name": "Cricket Hill Garden", "location": "Thomaston, CT", "distanceMiles": 87, "specialty": "Tree peonies, ornamentals" },
+  { "id": "imperial-nurseries", "name": "Imperial Nurseries", "location": "Granby, CT", "distanceMiles": 98, "specialty": "Landscape trees & shrubs" },
+  { "id": "sunny-hill", "name": "Sunny Hill Gardens", "location": "Orange, CT", "distanceMiles": 74, "specialty": "Perennials & annuals" },
+  { "id": "rock-farm", "name": "Rock Farm Nursery", "location": "Flanders, NJ", "distanceMiles": 44, "specialty": "Native plants & shrubs" },
+  { "id": "white-flower", "name": "White Flower Farm", "location": "Litchfield, CT", "distanceMiles": 93, "specialty": "Perennials & bulbs" },
+  { "id": "millbrook", "name": "Millbrook Nursery", "location": "Millbrook, NY", "distanceMiles": 58, "specialty": "Landscape trees & shrubs" },
+  { "id": "sunnyside", "name": "Sunnyside Nurseries", "location": "Huntington, NY", "distanceMiles": 37, "specialty": "Ornamentals & flowering trees" },
+  { "id": "griffith-prop", "name": "Griffith Propagation Nursery", "location": "Langhorne, PA", "distanceMiles": 76, "specialty": "Woodies & shrubs" },
+  { "id": "atlock-farm", "name": "Atlock Farm", "location": "Somerset, NJ", "distanceMiles": 54, "specialty": "Trees, shrubs, perennials" },
+  { "id": "shamrock-nursery", "name": "Shamrock Nurseries", "location": "Valhalla, NY", "distanceMiles": 8, "specialty": "General landscape nursery" },
+  { "id": "hudson-valley", "name": "Hudson Valley Nursery", "location": "Red Hook, NY", "distanceMiles": 72, "specialty": "Native plants & woodies" },
+  { "id": "camden-nursery", "name": "Camden Nurseries", "location": "Hawthorne, NJ", "distanceMiles": 18, "specialty": "Trees, shrubs, perennials" }
+]
