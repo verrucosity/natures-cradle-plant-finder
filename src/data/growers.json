@@ -1,6 +1,16 @@
 {
   "activeGrowers": [
     {
+      "id": "hardscrabble",
+      "name": "Hardscrabble Farms",
+      "location": "North Salem, NY",
+      "distanceMiles": 20,
+      "multiplier": 2.0,
+      "notes": "Auto-scraped weekly — 8,000+ varieties, live pricing",
+      "autoScrape": true,
+      "scrapeUrl": "https://hardscrabblefarms.com/Availability"
+    },
+    {
       "id": "prides-corner",
       "name": "Prides Corner Farms",
       "location": "Lebanon, CT",

@@ -2,5 +2,11 @@
   "rewrites": [
     { "source": "/admin", "destination": "/index.html" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/scrape-hardscrabble",
+      "schedule": "0 10 * * 1"
+    }
   ]
 }
