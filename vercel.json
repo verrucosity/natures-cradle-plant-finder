@@ -7,6 +7,10 @@
     {
       "path": "/api/scrape-hardscrabble",
       "schedule": "0 10 * * 1"
+    },
+    {
+      "path": "/api/fetch-perenual-images",
+      "schedule": "0 12 * * *"
     }
   ]
 }
