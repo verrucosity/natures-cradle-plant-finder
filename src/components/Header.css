@@ -13,8 +13,12 @@
 .header-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
   text-decoration: none;
+}
+.header-logo-img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
 }
 .logo-leaf {
   width: 38px; height: 38px;

@@ -8,11 +8,7 @@ export default function Header({ customerZip, onChangeZip }) {
   return (
     <header className="header">
       <a className="header-logo" href="https://naturescradle.com" target="_blank" rel="noreferrer">
-        <div className="logo-leaf" />
-        <div className="logo-text">
-          <strong>Plant Wizard</strong>
-          <span>by Nature's Cradle</span>
-        </div>
+        <img src="/logo.webp" alt="Nature's Cradle" className="header-logo-img" />
       </a>
 
       <div className="header-center">

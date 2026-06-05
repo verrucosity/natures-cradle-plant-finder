@@ -43,8 +43,7 @@ export default function ZipGate({ onZip }) {
     <div className="zip-gate-overlay">
       <div className="zip-gate-card">
         <div className="zip-gate-logo">
-          <div className="logo-leaf" />
-          <span>Plant Wizard</span>
+          <img src="/logo.webp" alt="Nature's Cradle" className="zip-gate-logo-img" />
         </div>
 
         <h2>Find plants near you</h2>
