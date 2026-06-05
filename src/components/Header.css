@@ -57,6 +57,30 @@
   font-weight: 300;
 }
 
+/* ── Center zone ── */
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+.header-zip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 20px;
+  padding: 5px 14px;
+  color: var(--green-pale);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s;
+  letter-spacing: .04em;
+}
+.header-zip:hover { background: rgba(255,255,255,.18); color: var(--white); }
+
 /* ── Wishlist button ── */
 .wishlist-btn {
   display: flex;

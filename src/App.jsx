@@ -9,10 +9,11 @@ import PlantGrid from './components/PlantGrid';
 import Pagination from './components/Pagination';
 import PlantModal from './components/PlantModal';
 import WishlistDrawer from './components/WishlistDrawer';
+import ZipGate, { getSavedZip, saveZip } from './components/ZipGate';
 import usePlants from './hooks/usePlants';
 import './App.css';
 
-function AppInner() {
+function AppInner({ customerZip, onChangeZip }) {
   const {
     query, handleQuery,
     active, toggleFilter, removeFilter, clearAll,
@@ -22,19 +23,20 @@ function AppInner() {
     totalPages,
     options,
     totalCount,
-  } = usePlants();
+  } = usePlants(customerZip);
 
   const [modalPlant, setModalPlant] = useState(null);
 
   return (
     <>
-      <Header />
+      <Header customerZip={customerZip} onChangeZip={onChangeZip} />
       <Hero totalCount={totalCount} />
       <SearchBar
         query={query}
         onQuery={handleQuery}
         resultCount={filtered.length}
         onClear={clearAll}
+        customerZip={customerZip}
       />
 
       <div className="layout">
@@ -62,13 +64,32 @@ function AppInner() {
 }
 
 export default function App() {
-  // Simple client-side routing for /admin
   if (window.location.pathname === '/admin') {
     return <AdminPage />;
   }
+
+  // Check if customer has already set their zip
+  const [customerZip, setCustomerZip] = useState(() => getSavedZip());
+  const [zipConfirmed, setZipConfirmed] = useState(() => localStorage.getItem('nc_zip_confirmed') === '1');
+
+  function handleZip(zip) {
+    saveZip(zip);
+    setCustomerZip(zip);
+    setZipConfirmed(true);
+    localStorage.setItem('nc_zip_confirmed', '1');
+  }
+
+  function handleChangeZip() {
+    localStorage.removeItem('nc_zip_confirmed');
+    localStorage.removeItem('nc_customer_zip');
+    setCustomerZip('');
+    setZipConfirmed(false);
+  }
+
   return (
     <WishlistProvider>
-      <AppInner />
+      {!zipConfirmed && <ZipGate onZip={handleZip} />}
+      <AppInner customerZip={customerZip} onChangeZip={handleChangeZip} />
     </WishlistProvider>
   );
 }

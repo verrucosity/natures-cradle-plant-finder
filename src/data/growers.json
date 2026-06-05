@@ -4,8 +4,9 @@
       "id": "hardscrabble",
       "name": "Hardscrabble Farms",
       "location": "North Salem, NY",
+      "zip": "10560",
       "distanceMiles": 20,
-      "multiplier": 2.0,
+      "multiplier": 3.0,
       "notes": "Auto-scraped weekly — 8,000+ varieties, live pricing",
       "autoScrape": true,
       "scrapeUrl": "https://hardscrabblefarms.com/Availability"
@@ -14,83 +15,119 @@
       "id": "prides-corner",
       "name": "Prides Corner Farms",
       "location": "Lebanon, CT",
+      "zip": "06249",
       "distanceMiles": 82,
-      "multiplier": 2.0,
+      "multiplier": 3.0,
       "notes": "Large woody ornamentals, trees & shrubs"
     },
     {
       "id": "deans",
       "name": "Deans",
       "location": "Connecticut",
+      "zip": "06238",
       "distanceMiles": 75,
-      "multiplier": 2.0,
+      "multiplier": 3.0,
       "notes": ""
     },
     {
       "id": "fernbrook",
       "name": "Fernbrook Farms",
       "location": "Leesburg, NJ",
+      "zip": "08327",
       "distanceMiles": 88,
-      "multiplier": 2.0,
+      "multiplier": 3.0,
       "notes": "Perennials & ornamental grasses"
     },
     {
       "id": "tuckahoe",
       "name": "Tuckahoe Nursery",
       "location": "New York",
+      "zip": "10707",
       "distanceMiles": 30,
-      "multiplier": 2.0,
+      "multiplier": 3.0,
       "notes": ""
     },
     {
       "id": "ithilien",
       "name": "Ithilien Farm",
       "location": "New York",
+      "zip": "12401",
       "distanceMiles": 45,
-      "multiplier": 2.0,
+      "multiplier": 3.0,
       "notes": ""
     },
     {
       "id": "glover",
       "name": "Glover Nurseries",
       "location": "Connecticut",
+      "zip": "06416",
       "distanceMiles": 70,
-      "multiplier": 2.0,
+      "multiplier": 3.0,
       "notes": ""
     },
     {
       "id": "perennial-farm",
       "name": "Perennial Farm",
       "location": "New Jersey",
+      "zip": "07921",
       "distanceMiles": 65,
-      "multiplier": 2.0,
+      "multiplier": 3.0,
       "notes": "Perennials specialist"
     },
     {
       "id": "johns-farm",
       "name": "John's Farm",
       "location": "New Jersey",
+      "zip": "08505",
       "distanceMiles": 55,
-      "multiplier": 2.0,
+      "multiplier": 3.0,
       "notes": ""
     },
     {
       "id": "edgar-joyce",
       "name": "Edgar Joyce Nurseries",
       "location": "New Jersey",
+      "zip": "08012",
       "distanceMiles": 60,
-      "multiplier": 2.0,
+      "multiplier": 3.0,
       "notes": ""
     },
     {
       "id": "sunset",
       "name": "Sunset Nursery",
       "location": "Connecticut",
+      "zip": "06770",
       "distanceMiles": 72,
-      "multiplier": 2.0,
+      "multiplier": 3.0,
       "notes": ""
+    },
+    {
+      "id": "colesville",
+      "name": "Colesville Nursery",
+      "location": "Colesville, VA",
+      "zip": "22534",
+      "distanceMiles": 310,
+      "multiplier": 3.0,
+      "notes": "National hub — specimen trees & shrubs",
+      "autoScrape": false,
+      "scrapeUrl": null,
+      "pendingCredentials": true
+    },
+    {
+      "id": "waverly",
+      "name": "Waverly Farm",
+      "location": "Waverly, MD",
+      "zip": "21655",
+      "distanceMiles": 230,
+      "multiplier": 3.0,
+      "notes": "National hub — premium specimens",
+      "autoScrape": false,
+      "scrapeUrl": null,
+      "pendingCredentials": true
     }
   ],
-  "defaultMultiplier": 2.0,
-  "baseLocation": "Eastchester, NY"
+  "defaultMultiplier": 3.0,
+  "radiusMiles": 50,
+  "baseLocation": "Eastchester, NY",
+  "baseZip": "10709"
 }

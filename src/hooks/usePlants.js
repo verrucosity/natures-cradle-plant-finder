@@ -1,6 +1,8 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import PLANTS from '../data/plants.json';
+import GROWERS_CONFIG from '../data/growers.json';
 import { FILTERS } from '../components/Sidebar';
+import { zipToCoords, haversineDistance } from '../utils/distance';
 
 const PER_PAGE = 24;
 
@@ -22,11 +24,43 @@ const OPTIONS = buildOptions();
 
 const initActive = () => Object.fromEntries(FILTERS.map(f => [f.key, []]));
 
-export default function usePlants() {
+// Build grower zip → coords cache
+const growerZipMap = Object.fromEntries(
+  GROWERS_CONFIG.activeGrowers
+    .filter(g => g.zip)
+    .map(g => [g.id, g.zip])
+);
+const RADIUS_MILES = GROWERS_CONFIG.radiusMiles || 50;
+
+export default function usePlants(customerZip) {
   const [query, setQuery]   = useState('');
   const [active, setActive] = useState(initActive);
   const [sort, setSort]     = useState('az');
   const [page, setPage]     = useState(1);
+
+  // Grower distance cache keyed by customer zip
+  const [growerDistances, setGrowerDistances] = useState({}); // growerId → miles
+
+  useEffect(() => {
+    if (!customerZip) { setGrowerDistances({}); return; }
+
+    let cancelled = false;
+    async function calcDistances() {
+      const customerCoords = await zipToCoords(customerZip);
+      if (!customerCoords || cancelled) return;
+
+      const results = {};
+      await Promise.all(
+        Object.entries(growerZipMap).map(async ([growerId, growerZip]) => {
+          const gc = await zipToCoords(growerZip);
+          if (gc) results[growerId] = haversineDistance(customerCoords, gc);
+        })
+      );
+      if (!cancelled) setGrowerDistances(results);
+    }
+    calcDistances();
+    return () => { cancelled = true; };
+  }, [customerZip]);
 
   const filtered = useMemo(() => {
     let list = PLANTS.filter(p => {
@@ -60,7 +94,19 @@ export default function usePlants() {
 
   const totalPages  = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const safePage    = Math.min(page, totalPages);
-  const paginated   = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE);
+
+  // Filter each plant's availability to only show growers within radius
+  const hasDistances = customerZip && Object.keys(growerDistances).length > 0;
+  const paginated = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE).map(plant => {
+    if (!hasDistances || !plant.availability?.length) return plant;
+    const nearbyAvail = plant.availability.filter(a => {
+      if (!a.growerId) return true; // no grower tag = always show
+      const dist = growerDistances[a.growerId];
+      if (dist === undefined) return true; // unknown grower = show
+      return dist <= RADIUS_MILES;
+    });
+    return { ...plant, availability: nearbyAvail };
+  });
 
   const toggleFilter = useCallback((key, val) => {
     setActive(prev => {
@@ -93,5 +139,6 @@ export default function usePlants() {
     totalPages,
     options: OPTIONS,
     totalCount: PLANTS.length,
+    growerDistances,
   };
 }
