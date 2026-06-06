@@ -30,3 +30,21 @@ body {
 }
 
 #root { min-height: 100vh; }
+
+/* Prevent selection on key content */
+.card-name,
+.card-avail-price,
+.card-from-price,
+.modal-avail-price,
+.wl-item-price,
+.sp-size-price {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Prevent image drag */
+.card-img, .header-logo-img {
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+.card-img-wrap { pointer-events: auto; }
