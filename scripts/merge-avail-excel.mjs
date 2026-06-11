@@ -153,5 +153,102 @@ for (const plant of plants) {
 console.log(`Matched ${matched}/${plants.length} plants`);
 console.log(`Total availability entries: ${totalEntries}`);
 
+// --- Add new plants from Excel that had no match ---
+const existingNorms = new Set(plants.map(p => norm(p.name)));
+const existingIds   = new Set(plants.map(p => p.id));
+
+// Collect all unmatched excel entries grouped by plant name
+const unmatchedByName = new Map();
+for (const e of entries) {
+  const n = norm(e.name);
+  if (existingNorms.has(n)) continue; // already matched
+  // Also skip if a cultivar match was possible (would have been caught above)
+  const cv = cultivar(n);
+  const genus = n.split(' ')[0];
+  if (cv) {
+    const k = `${genus}||${cv}`;
+    if (byCultivar.has(k)) {
+      // Check if this cultivar already matched an existing plant
+      const existing = plants.find(p => {
+        const pn = norm(p.name);
+        const pcv = cultivar(pn);
+        return pn.split(' ')[0] === genus && pcv === cv;
+      });
+      if (existing) continue;
+    }
+  }
+  if (!unmatchedByName.has(n)) unmatchedByName.set(n, { rawName: e.name, entries: [] });
+  unmatchedByName.get(n).entries.push(e);
+}
+
+// Generate a unique slug ID from name
+function makeId(name) {
+  let slug = name.toUpperCase()
+    .replace(/[''`'']/g, '')
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, 8);
+  let id = slug;
+  let i = 2;
+  while (existingIds.has(id)) id = slug + (i++);
+  existingIds.add(id);
+  return id;
+}
+
+// Title-case a string
+function toTitleCase(s) {
+  return s.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .replace(/'([a-z])/g, (_, c) => "'" + c.toUpperCase());
+}
+
+let added = 0;
+for (const [, { rawName, entries: es }] of unmatchedByName) {
+  const name = toTitleCase(rawName.toLowerCase().replace(/[''`]/g, "'"));
+
+  // Deduplicate sizes
+  const sizeGrowerMap = new Map();
+  for (const h of es) {
+    const mapKey = `${h.size}||${h.growerId}`;
+    const existing = sizeGrowerMap.get(mapKey);
+    if (!existing || h.price > existing.price) sizeGrowerMap.set(mapKey, h);
+  }
+
+  const availability = [...sizeGrowerMap.values()].map(h => ({
+    size: h.size,
+    price: `$${h.price.toFixed(2)}`,
+    qty: h.qty,
+    height: h.height || undefined,
+    growerId: h.growerId,
+  })).sort((a, b) => (parseFloat(a.size) || 999) - (parseFloat(b.size) || 999) || a.size.localeCompare(b.size));
+
+  // Infer rough category from name
+  const nl = rawName.toLowerCase();
+  let category = 'Shrub';
+  if (/\b(acer|betula|quercus|fagus|tilia|ulmus|fraxinus|platanus|liquidambar|liriodendron|nyssa|cercis|cornus|magnolia|prunus|malus|pyrus|sorbus|gleditsia|robinia|catalpa|paulownia|metasequoia|taxodium|ginkgo|conifer|abies|picea|pinus|tsuga|thuja|chamaecyparis|cedrus|juniperus|cryptomeria)\b/.test(nl)) category = 'Tree';
+  else if (/\b(achillea|agastache|allium|anemone|aquilegia|aster|astilbe|baptisia|bergenia|brunnera|campanula|coreopsis|delphinium|dianthus|digitalis|echinacea|eupatorium|geranium|helenium|hemerocallis|heuchera|hosta|iris|kniphofia|lavandula|leucanthemum|liatris|lupinus|monarda|nepeta|penstemon|perovskia|phlox|platycodon|rudbeckia|salvia|scabiosa|sedum|verbena|veronica|perennial|ornamental grass|grass|fern|athyrium|dryopteris|osmunda|carex|pennisetum|miscanthus|panicum|molinia)\b/.test(nl)) category = 'Perennial';
+  else if (/\b(rosa|rose)\b/.test(nl)) category = 'Rose';
+
+  plants.push({
+    id: makeId(rawName),
+    name,
+    desc: '',
+    category,
+    plantType: '',
+    light: [],
+    zones: [],
+    water: [],
+    maintenance: [],
+    season: [],
+    height: '',
+    soil: [],
+    availability,
+  });
+
+  existingNorms.add(norm(name));
+  added++;
+}
+
+console.log(`Added ${added} new plants from Excel`);
+console.log(`Total plants: ${plants.length}`);
+
 writeFileSync(PLANTS_PATH, JSON.stringify(plants, null, 2), 'utf8');
 console.log('plants.json saved!');
