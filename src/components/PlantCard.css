@@ -253,3 +253,26 @@
   background: var(--green-deep);
   transform: scale(1.04);
 }
+
+/* Color dots */
+.card-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+.card-color-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,.12);
+  display: inline-block;
+  flex-shrink: 0;
+}
+.card-color-label {
+  font-size: 10px;
+  color: var(--text-light);
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: var(--cream-dark);
+}

@@ -72,6 +72,22 @@
   font-weight: 500;
 }
 
+/* Color filter swatches */
+.color-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 6px;
+}
+.color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,.12);
+  flex-shrink: 0;
+  display: inline-block;
+}
+
 @media (max-width: 900px) {
   .sidebar {
     position: static;

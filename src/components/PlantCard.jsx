@@ -3,6 +3,23 @@ import { useWishlist } from '../context/WishlistContext';
 import SizePicker from './SizePicker';
 import './PlantCard.css';
 
+const COLOR_SWATCHES = {
+  'White':   '#f5f5f5',
+  'Cream':   '#fffdd0',
+  'Yellow':  '#f5c518',
+  'Orange':  '#f58518',
+  'Red':     '#d9534f',
+  'Pink':    '#f4a7b9',
+  'Purple':  '#9b59b6',
+  'Blue':    '#4a90d9',
+  'Lavender':'#b57bee',
+  'Green':   '#4a7c3f',
+  'Silver':  '#c0c0c0',
+  'Bronze':  '#cd7f32',
+  'Brown':   '#8b6f47',
+  'Black':   '#2c2c2c',
+};
+
 function parsePrice(str) {
   return parseFloat((str || '').replace(/[$,]/g, '')) || Infinity;
 }
@@ -89,6 +106,20 @@ export default function PlantCard({ plant, onOpen }) {
             <span key={z} className="attr-pill zone">{z}</span>
           ))}
         </div>
+
+        {/* Color dots */}
+        {plant.colors?.length > 0 && (
+          <div className="card-colors">
+            {plant.colors.slice(0, 6).map(c => {
+              const swatch = COLOR_SWATCHES[c];
+              return swatch ? (
+                <span key={c} className="card-color-dot" style={{ background: swatch }} title={c} />
+              ) : (
+                <span key={c} className="card-color-label">{c}</span>
+              );
+            })}
+          </div>
+        )}
 
         {/* Availability sizes + prices */}
         {inStock && avail.some(a => a.size && !/^\d+$/.test(a.size)) && (
