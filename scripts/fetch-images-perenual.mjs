@@ -19,7 +19,7 @@ const __dir    = dirname(fileURLToPath(import.meta.url));
 const DATA     = join(__dir, '../src/data/plants.json');
 const PROGRESS = join(__dir, '../src/data/perenual-progress.json');
 
-const API_KEY  = 'sk-hIq06a233375ca2f06294';
+const API_KEY  = process.env.PERENUAL_API_KEY;
 const BATCH    = 90;
 const DELAY_MS = 420;
 
