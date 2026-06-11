@@ -403,6 +403,42 @@
   margin-bottom: 20px;
 }
 .admin-multiplier-badge strong { color: var(--green-deep); }
+.admin-no-multi-badge {
+  background: #fff8e7;
+  border-color: #e8c84a;
+  color: #7a6000;
+}
+.admin-no-multi-badge strong { color: #5a4400; }
+
+/* No-multiplier checkbox row */
+.admin-no-multi-row {
+  border-top: 1px dashed var(--green-pale);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+.admin-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+.admin-checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--green-mid);
+  cursor: pointer;
+}
+.admin-checkbox-label span:first-of-type {
+  line-height: 1.35;
+}
+.admin-checkbox-label .admin-setting-hint {
+  display: block;
+  font-weight: 400;
+}
 
 /* ── Growers tab ── */
 .admin-growers-header {

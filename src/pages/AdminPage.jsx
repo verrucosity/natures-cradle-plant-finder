@@ -32,6 +32,7 @@ export default function AdminPage() {
   const [growers, setGrowers]           = useState(DEFAULT_GROWERS_JSON);
   const [selectedGrowerId, setSelectedGrowerId] = useState('combined');
   const [multiplierOverride, setMultiplierOverride] = useState('');
+  const [noMultiplier, setNoMultiplier] = useState(false);
   const [growersLoaded, setGrowersLoaded] = useState(false);
   const [growersSaving, setGrowersSaving] = useState(false);
   const [growersSaved, setGrowersSaved]   = useState(false);
@@ -47,9 +48,10 @@ export default function AdminPage() {
   }, [step, growersLoaded]);
 
   // Effective multiplier for current upload
-  const effectiveMultiplier = parseFloat(multiplierOverride) ||
+  const effectiveMultiplier = noMultiplier ? 1.0 :
+    (parseFloat(multiplierOverride) ||
     growers.activeGrowers.find(g => g.id === selectedGrowerId)?.multiplier ||
-    growers.defaultMultiplier || 2.0;
+    growers.defaultMultiplier || 2.0);
 
   async function handleLogin(e) {
     e.preventDefault();
@@ -232,14 +234,29 @@ export default function AdminPage() {
                           <input
                             type="number"
                             min="1" max="10" step="0.1"
-                            placeholder={effectiveMultiplier.toFixed(1)}
-                            value={multiplierOverride}
+                            placeholder={noMultiplier ? '1.0' : effectiveMultiplier.toFixed(1)}
+                            value={noMultiplier ? '' : multiplierOverride}
                             onChange={e => setMultiplierOverride(e.target.value)}
+                            disabled={noMultiplier}
+                            style={noMultiplier ? { opacity: 0.4, pointerEvents: 'none' } : {}}
                           />
                           <span className="admin-multiplier-preview">
-                            e.g. $50.00 → {('$' + (50 * effectiveMultiplier).toFixed(2))}
+                            {noMultiplier
+                              ? 'prices used as-is'
+                              : `e.g. $50.00 → ${'$' + (50 * effectiveMultiplier).toFixed(2)}`}
                           </span>
                         </div>
+                      </div>
+                      <div className="admin-setting-row admin-no-multi-row">
+                        <label className="admin-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={noMultiplier}
+                            onChange={e => setNoMultiplier(e.target.checked)}
+                          />
+                          <span>Prices already include markup</span>
+                          <span className="admin-setting-hint">Use when uploading the master availability sheet (retail prices already applied)</span>
+                        </label>
                       </div>
                     </div>
 
@@ -280,9 +297,11 @@ export default function AdminPage() {
                     <div className="admin-icon">✅</div>
                     <h2>Ready to Publish</h2>
 
-                    <div className="admin-multiplier-badge">
-                      Multiplier applied: <strong>{effectiveMultiplier}×</strong>
-                      <span> — wholesale prices × {effectiveMultiplier} = retail prices shown to customers</span>
+                    <div className={`admin-multiplier-badge${noMultiplier ? ' admin-no-multi-badge' : ''}`}>
+                      {noMultiplier
+                        ? <><strong>No multiplier</strong><span> — prices from sheet used as-is (already retail)</span></>
+                        : <>Multiplier applied: <strong>{effectiveMultiplier}×</strong><span> — wholesale prices × {effectiveMultiplier} = retail prices shown to customers</span></>
+                      }
                     </div>
 
                     <div className="admin-stats-grid">
@@ -293,9 +312,11 @@ export default function AdminPage() {
                     </div>
 
                     <div className="admin-sample">
-                      <div className="admin-sample-title">Sample retail prices (after {effectiveMultiplier}× markup)</div>
+                      <div className="admin-sample-title">
+                        {noMultiplier ? 'Sample prices (no multiplier — used as-is)' : `Sample retail prices (after ${effectiveMultiplier}× markup)`}
+                      </div>
                       <table className="admin-table">
-                        <thead><tr><th>Plant</th><th>Wholesale</th><th>→ Retail (shown to customers)</th></tr></thead>
+                        <thead><tr><th>Plant</th><th>{noMultiplier ? 'Sheet Price' : 'Wholesale'}</th><th>{noMultiplier ? 'Customer Price (same)' : '→ Retail (shown to customers)'}</th></tr></thead>
                         <tbody>
                           {result.plants.filter(p => p.availability?.length).slice(0, 6).map(p => (
                             <tr key={p.id}>
