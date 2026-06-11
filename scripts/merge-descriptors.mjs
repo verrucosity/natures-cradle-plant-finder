@@ -48,11 +48,15 @@ for (const plant of plants) {
   const row = bySku.get(plant.id) || byName.get(norm(plant.name));
   if (!row) { skipped++; continue; }
 
-  // Description — only fill if blank
+  // Description — fill if blank, or replace generic Wikipedia genus stubs
   const desc = (row['Description'] || '').toString().trim();
-  if (desc && !plant.desc) plant.desc = desc;
-  // Also update if current desc is the generic Wikipedia genus stub (short/unhelpful)
-  else if (desc && plant.desc && plant.desc.length < 120) plant.desc = desc;
+  if (desc) {
+    const genus = (plant.name || '').split(' ')[0];
+    const isGenericStub = !plant.desc
+      || plant.desc.length < 300
+      || (plant.desc.startsWith(genus + ' is a genus') || plant.desc.startsWith(genus + ' is an'));
+    if (isGenericStub) plant.desc = desc;
+  }
 
   // Structured fields — fill blanks, don't overwrite good existing data
   const zones = splitList(row['Climate Zones']);
