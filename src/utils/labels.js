@@ -21,3 +21,46 @@ export function cleanSizeLabel(size) {
 export function hasDisplayableSize(a) {
   return a.size && !/^\d+$/.test(a.size);
 }
+
+/** Grower whose stock always wins its size slot, regardless of price. */
+const PRIORITY_GROWER = 'ithilien';
+
+function priceNum(a) {
+  return parseFloat((a.price || '').replace(/[$,]/g, '')) || 0;
+}
+
+/**
+ * Consolidates availability entries for display:
+ * one entry per (cleaned) size — different raw labels like "3 Gallon" and
+ * "3 Gallon Ready Nice" collapse into a single "3 Gallon" slot.
+ *
+ * Winner per slot: Ithilien Farm entries always take priority; otherwise
+ * the highest-priced entry wins. Result is sorted by size (numeric when
+ * possible) for a tidy small-to-large display.
+ */
+export function consolidateAvailability(availability) {
+  const bySize = new Map();
+
+  for (const a of availability || []) {
+    if (!hasDisplayableSize(a)) continue;
+    const label = cleanSizeLabel(a.size);
+    const key = label.toLowerCase();
+    const entry = { ...a, size: label };
+    const cur = bySize.get(key);
+
+    if (!cur) { bySize.set(key, entry); continue; }
+
+    const curPriority = cur.growerId === PRIORITY_GROWER;
+    const newPriority = entry.growerId === PRIORITY_GROWER;
+
+    if (newPriority && !curPriority) { bySize.set(key, entry); continue; }
+    if (curPriority && !newPriority) continue;
+    if (priceNum(entry) > priceNum(cur)) bySize.set(key, entry);
+  }
+
+  return [...bySize.values()].sort((a, b) => {
+    const na = parseFloat(a.size) || Infinity;
+    const nb = parseFloat(b.size) || Infinity;
+    return na - nb || a.size.localeCompare(b.size);
+  });
+}

@@ -1,4 +1,4 @@
-import { cleanSizeLabel } from '../utils/labels';
+import { consolidateAvailability } from '../utils/labels';
 import { useState } from 'react';
 import { useWishlist } from '../context/WishlistContext';
 import SizePicker from './SizePicker';
@@ -19,7 +19,7 @@ export default function PlantModal({ plant, onClose }) {
   const [showPicker, setShowPicker] = useState(false);
   const { isInWishlist, toggleWishlist, setDrawerOpen } = useWishlist();
   const wishlisted = isInWishlist(plant?.id);
-  const availWithSize = (plant?.availability || []).filter(a => a.size && !/^\d+$/.test(a.size));
+  const availWithSize = consolidateAvailability(plant?.availability);
 
   if (!plant) return null;
 
@@ -73,16 +73,16 @@ export default function PlantModal({ plant, onClose }) {
           </button>
           <div className="modal-cat">{plant.category}</div>
           <div className="modal-name">{plant.name}</div>
-          {plant.availability?.length > 0 && (
+          {availWithSize.length > 0 && (
             <div className="modal-availability">
               <div className="modal-avail-header">
                 <span className="modal-avail-label">✓ In Stock</span>
                 <span className="modal-avail-date">Updated {plant.availabilityDate}</span>
               </div>
               <div className="modal-avail-chips">
-                {plant.availability.filter(a => a.size && !/^\d+$/.test(a.size)).map((a, i) => (
+                {availWithSize.map((a, i) => (
                   <span key={i} className="modal-avail-chip">
-                    <span className="modal-avail-size">{cleanSizeLabel(a.size)}</span>
+                    <span className="modal-avail-size">{a.size}</span>
                     <span className="modal-avail-price">{a.price}</span>
                     {a.qty && !isNaN(Number(a.qty)) && Number(a.qty) > 0 &&
                       <span className="modal-avail-qty">{Number(a.qty)} avail.</span>}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useWishlist } from '../context/WishlistContext';
-import { cleanSizeLabel, hasDisplayableSize } from '../utils/labels';
+import { consolidateAvailability } from '../utils/labels';
 import SizePicker from './SizePicker';
 import './PlantCard.css';
 
@@ -34,8 +34,7 @@ export default function PlantCard({ plant, onOpen }) {
   const wishlisted = isInWishlist(plant.id);
   const [showPicker, setShowPicker] = useState(false);
 
-  const avail = plant.availability || [];
-  const availWithSize = avail.filter(hasDisplayableSize);
+  const availWithSize = consolidateAvailability(plant.availability);
   const inStock = availWithSize.length > 0;
   const lowestPrice = inStock
     ? availWithSize.reduce((min, a) => parsePrice(a.price) < parsePrice(min.price) ? a : min, availWithSize[0])
@@ -127,7 +126,7 @@ export default function PlantCard({ plant, onOpen }) {
           <div className="card-avail">
             {availWithSize.slice(0, 4).map((a, i) => (
               <span key={i} className="card-avail-chip">
-                <span className="card-avail-size">{cleanSizeLabel(a.size)}</span>
+                <span className="card-avail-size">{a.size}</span>
                 <span className="card-avail-price">{a.price}</span>
               </span>
             ))}
