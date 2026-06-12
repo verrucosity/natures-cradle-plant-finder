@@ -83,16 +83,82 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 1.5px solid rgba(0,0,0,.12);
+  border: 1.5px solid rgba(0,0,0,.22);
   flex-shrink: 0;
   display: inline-block;
 }
 
+/* Mobile drawer chrome — hidden on desktop */
+.sidebar-mobile-header { display: none; }
+.sidebar-apply { display: none; }
+.sidebar-backdrop { display: none; }
+
 @media (max-width: 900px) {
+  /* Off-canvas drawer instead of stacking above the grid */
   .sidebar {
-    position: static;
-    height: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(320px, 85vw);
+    height: 100vh;
+    z-index: 1000;
+    transform: translateX(-105%);
+    transition: transform .28s cubic-bezier(.4, 0, .2, 1);
+    box-shadow: 4px 0 24px rgba(0,0,0,.18);
     border-right: none;
+    padding-bottom: 90px;
+  }
+  .sidebar.open { transform: translateX(0); }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,46,26,.45);
+    z-index: 999;
+    animation: fadeIn .2s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .sidebar-mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
     border-bottom: 1px solid var(--cream-dark);
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--text-dark);
+  }
+  .sidebar-close {
+    width: 30px; height: 30px;
+    border: none;
+    border-radius: 50%;
+    background: var(--cream);
+    color: var(--text-mid);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-apply {
+    display: block;
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    width: calc(min(320px, 85vw) - 32px);
+    padding: 13px;
+    border: none;
+    border-radius: 24px;
+    background: var(--green-mid);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(26,46,26,.3);
   }
 }

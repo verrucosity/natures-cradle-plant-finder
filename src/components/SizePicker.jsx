@@ -1,3 +1,4 @@
+import { cleanSizeLabel } from '../utils/labels';
 import { useEffect, useRef } from 'react';
 import './SizePicker.css';
 
@@ -33,7 +34,7 @@ export default function SizePicker({ plant, onSelect, onClose }) {
         <div className="sp-sizes">
           {sizes.map((a, i) => (
             <button key={i} className="sp-size-btn" onClick={() => onSelect(a)}>
-              <span className="sp-size-label">{a.size}</span>
+              <span className="sp-size-label">{cleanSizeLabel(a.size)}</span>
               <span className="sp-size-price">{a.price}</span>
               {a.qty && !isNaN(Number(a.qty)) && Number(a.qty) > 0 && (
                 <span className="sp-size-qty">{Number(a.qty)} avail.</span>

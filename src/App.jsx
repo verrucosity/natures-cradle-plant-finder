@@ -26,9 +26,13 @@ function AppInner({ customerZip, onChangeZip }) {
     options,
     totalCount,
     loading,
+    inStockOnly, toggleInStock,
   } = usePlants(customerZip);
 
   const [modalPlant, setModalPlant] = useState(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const activeFilterCount = Object.values(active).reduce((n, arr) => n + arr.length, 0);
 
   return (
     <>
@@ -43,11 +47,24 @@ function AppInner({ customerZip, onChangeZip }) {
       />
 
       <div className="layout">
-        <Sidebar options={options} active={active} onToggle={toggleFilter} />
+        <Sidebar
+          options={options}
+          active={active}
+          onToggle={toggleFilter}
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+        />
         <div className="layout-right">
           {loading && (
-            <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-light, #888)' }}>
-              Loading plants…
+            <div className="grid skeleton-grid">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div key={i} className="skeleton-card">
+                  <div className="skeleton-img" />
+                  <div className="skeleton-line w70" />
+                  <div className="skeleton-line w90" />
+                  <div className="skeleton-line w50" />
+                </div>
+              ))}
             </div>
           )}
           {!loading && <PlantGrid
@@ -57,10 +74,20 @@ function AppInner({ customerZip, onChangeZip }) {
             activeFilters={active}
             onRemoveFilter={removeFilter}
             onOpen={setModalPlant}
+            inStockOnly={inStockOnly}
+            onToggleInStock={toggleInStock}
           />}
           {!loading && <Pagination page={page} totalPages={totalPages} onPage={setPage} />}
         </div>
       </div>
+
+      {/* Mobile filter button */}
+      <button className="filters-fab" onClick={() => setFiltersOpen(true)}>
+        <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
+        </svg>
+        Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+      </button>
 
       {modalPlant && (
         <PlantModal plant={modalPlant} onClose={() => setModalPlant(null)} />

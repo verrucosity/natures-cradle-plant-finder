@@ -1,7 +1,7 @@
 import PlantCard from './PlantCard';
 import './PlantGrid.css';
 
-export default function PlantGrid({ plants, sort, onSort, activeFilters, onRemoveFilter, onOpen }) {
+export default function PlantGrid({ plants, sort, onSort, activeFilters, onRemoveFilter, onOpen, inStockOnly, onToggleInStock }) {
   return (
     <main className="main">
       <div className="sort-bar">
@@ -21,9 +21,18 @@ export default function PlantGrid({ plants, sort, onSort, activeFilters, onRemov
             ))
           )}
         </div>
+        <button
+          className={`instock-toggle${inStockOnly ? ' active' : ''}`}
+          onClick={onToggleInStock}
+        >
+          <span className="instock-toggle-dot" />
+          In Stock Only
+        </button>
         <select className="sort-select" value={sort} onChange={e => onSort(e.target.value)}>
           <option value="az">A → Z</option>
           <option value="za">Z → A</option>
+          <option value="priceAsc">Price: Low → High</option>
+          <option value="priceDesc">Price: High → Low</option>
           <option value="cat">By Category</option>
         </select>
       </div>

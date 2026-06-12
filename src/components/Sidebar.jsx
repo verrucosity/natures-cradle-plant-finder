@@ -32,9 +32,19 @@ const COLOR_SWATCHES = {
 
 export { FILTERS };
 
-export default function Sidebar({ options, active, onToggle }) {
+export default function Sidebar({ options, active, onToggle, open, onClose }) {
   return (
-    <aside className="sidebar">
+    <>
+    {open && <div className="sidebar-backdrop" onClick={onClose} />}
+    <aside className={`sidebar${open ? ' open' : ''}`}>
+      <div className="sidebar-mobile-header">
+        <span>Filters</span>
+        <button className="sidebar-close" onClick={onClose} aria-label="Close filters">
+          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
       {FILTERS.map(f => {
         const opts = options[f.key] || [];
         const activeCount = active[f.key]?.length || 0;
@@ -71,6 +81,8 @@ export default function Sidebar({ options, active, onToggle }) {
           </div>
         );
       })}
+      <button className="sidebar-apply" onClick={onClose}>Show Plants</button>
     </aside>
+    </>
   );
 }

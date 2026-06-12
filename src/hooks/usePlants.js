@@ -15,7 +15,9 @@ function buildOptions(plants) {
       if (Array.isArray(val)) val.forEach(v => seen.add(v));
       else if (val) seen.add(val);
     });
-    opts[f.key] = [...seen].sort();
+    opts[f.key] = f.key === 'zones'
+      ? [...seen].sort((a, b) => (parseInt(a.replace(/\D/g, '')) || 0) - (parseInt(b.replace(/\D/g, '')) || 0))
+      : [...seen].sort();
   });
   return opts;
 }
@@ -37,6 +39,7 @@ export default function usePlants(customerZip) {
   const [active, setActive] = useState(initActive);
   const [sort, setSort]     = useState('az');
   const [page, setPage]     = useState(1);
+  const [inStockOnly, setInStockOnly] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,7 +76,17 @@ export default function usePlants(customerZip) {
   }, [customerZip]);
 
   const filtered = useMemo(() => {
+    const minPrice = p => {
+      let min = Infinity;
+      for (const a of p.availability || []) {
+        const v = parseFloat((a.price || '').replace(/[$,]/g, ''));
+        if (v && v < min) min = v;
+      }
+      return min;
+    };
+
     let list = plants.filter(p => {
+      if (inStockOnly && !(p.availability || []).some(a => a.size && !/^\d+$/.test(a.size))) return false;
       if (query) {
         const q = query.toLowerCase();
         if (
@@ -98,10 +111,16 @@ export default function usePlants(customerZip) {
 
     if (sort === 'az')  list.sort((a, b) => a.name.localeCompare(b.name));
     else if (sort === 'za') list.sort((a, b) => b.name.localeCompare(a.name));
+    else if (sort === 'priceAsc')  list.sort((a, b) => minPrice(a) - minPrice(b) || a.name.localeCompare(b.name));
+    else if (sort === 'priceDesc') list.sort((a, b) => {
+      const ma = minPrice(a), mb = minPrice(b);
+      // plants without prices sink to the bottom in both price sorts
+      return (mb === Infinity ? -1 : mb) - (ma === Infinity ? -1 : ma) || a.name.localeCompare(b.name);
+    });
     else list.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
 
     return list;
-  }, [plants, query, active, sort]);
+  }, [plants, query, active, sort, inStockOnly]);
 
   const totalPages  = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const safePage    = Math.min(page, totalPages);
@@ -140,6 +159,7 @@ export default function usePlants(customerZip) {
 
   const handleQuery = useCallback(q => { setQuery(q); setPage(1); }, []);
   const handleSort  = useCallback(s => { setSort(s);  setPage(1); }, []);
+  const toggleInStock = useCallback(() => { setInStockOnly(v => !v); setPage(1); }, []);
 
   return {
     query, handleQuery,
@@ -152,5 +172,6 @@ export default function usePlants(customerZip) {
     totalCount: plants.length,
     growerDistances,
     loading,
+    inStockOnly, toggleInStock,
   };
 }

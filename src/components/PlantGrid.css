@@ -31,6 +31,38 @@
 .active-filter-tag:hover { background: var(--green-mid); }
 .active-filter-tag svg { flex-shrink: 0; }
 
+.instock-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1.5px solid var(--cream-dark);
+  border-radius: 20px;
+  background: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-mid);
+  cursor: pointer;
+  transition: all .18s;
+  margin-left: auto;
+}
+.instock-toggle:hover { border-color: var(--green-bright); color: var(--green-mid); }
+.instock-toggle-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--cream-dark);
+  transition: background .18s;
+}
+.instock-toggle.active {
+  background: var(--green-mid);
+  border-color: var(--green-mid);
+  color: var(--white);
+}
+.instock-toggle.active .instock-toggle-dot { background: #9fe28f; }
+
 .sort-select {
   height: 36px;
   padding: 0 12px;

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useWishlist } from '../context/WishlistContext';
+import { cleanSizeLabel, hasDisplayableSize } from '../utils/labels';
 import SizePicker from './SizePicker';
 import './PlantCard.css';
 
@@ -25,7 +26,7 @@ function parsePrice(str) {
 }
 
 export default function PlantCard({ plant, onOpen }) {
-  const catClass = 'cat-' + plant.category.toLowerCase().replace(/[^a-z]/g, '');
+  const catClass = 'cat-' + (plant.category || '').toLowerCase().replace(/[^a-z]/g, '');
   const [imgError, setImgError] = useState(false);
   const showImg = plant.imageUrl && !imgError;
 
@@ -34,7 +35,7 @@ export default function PlantCard({ plant, onOpen }) {
   const [showPicker, setShowPicker] = useState(false);
 
   const avail = plant.availability || [];
-  const availWithSize = avail.filter(a => a.size && !/^\d+$/.test(a.size));
+  const availWithSize = avail.filter(hasDisplayableSize);
   const inStock = availWithSize.length > 0;
   const lowestPrice = inStock
     ? availWithSize.reduce((min, a) => parsePrice(a.price) < parsePrice(min.price) ? a : min, availWithSize[0])
@@ -59,8 +60,8 @@ export default function PlantCard({ plant, onOpen }) {
   return (
     <>
     <div className="card" onClick={() => onOpen(plant)}>
-      {showImg ? (
-        <div className="card-img-wrap">
+      <div className="card-img-wrap">
+        {showImg ? (
           <img
             className="card-img"
             src={plant.imageUrl}
@@ -68,31 +69,31 @@ export default function PlantCard({ plant, onOpen }) {
             loading="lazy"
             onError={() => setImgError(true)}
           />
-          <span className={`card-img-category-badge ${catClass}`}>{plant.category}</span>
-          {inStock && (
-            <span className="card-instock-badge">✓ In Stock</span>
-          )}
-          <button
-            className={`card-heart${wishlisted ? ' active' : ''}`}
-            onClick={handleWishlist}
-            aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-          >
-            <svg width="15" height="15" fill={wishlisted ? '#f28b82' : 'none'} stroke={wishlisted ? '#f28b82' : 'white'} strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        ) : (
+          <div className={`card-img-ph ${catClass}`}>
+            <svg className="card-img-ph-leaf" width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
             </svg>
-          </button>
-        </div>
-      ) : (
-        <div className={`card-color-bar ${catClass}`} />
-      )}
-
-      <div className="card-body">
-        {!showImg && (
-          <div className="card-category-row">
-            <span className="card-category">{plant.category}</span>
-            {inStock && <span className="card-instock-badge-inline">✓ In Stock</span>}
+            <span className="card-img-ph-initial">{(plant.name || '?')[0]}</span>
           </div>
         )}
+        <span className={`card-img-category-badge ${catClass}`}>{plant.category}</span>
+        {inStock && (
+          <span className="card-instock-badge">✓ In Stock</span>
+        )}
+        <button
+          className={`card-heart${wishlisted ? ' active' : ''}`}
+          onClick={handleWishlist}
+          aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+        >
+          <svg width="15" height="15" fill={wishlisted ? '#f28b82' : 'none'} stroke={wishlisted ? '#f28b82' : 'white'} strokeWidth="2" viewBox="0 0 24 24">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div className="card-body">
         <div className="card-name">{plant.name}</div>
         {plant.desc && <div className="card-desc">{plant.desc}</div>}
         <div className="card-attrs">
@@ -124,12 +125,15 @@ export default function PlantCard({ plant, onOpen }) {
         {/* Availability sizes + prices */}
         {inStock && (
           <div className="card-avail">
-            {availWithSize.map((a, i) => (
+            {availWithSize.slice(0, 4).map((a, i) => (
               <span key={i} className="card-avail-chip">
-                <span className="card-avail-size">{a.size}</span>
+                <span className="card-avail-size">{cleanSizeLabel(a.size)}</span>
                 <span className="card-avail-price">{a.price}</span>
               </span>
             ))}
+            {availWithSize.length > 4 && (
+              <span className="card-avail-chip card-avail-more">+{availWithSize.length - 4} more</span>
+            )}
           </div>
         )}
       </div>
@@ -144,17 +148,6 @@ export default function PlantCard({ plant, onOpen }) {
         <div className="card-footer-actions">
           {inStock && lowestPrice && (
             <span className="card-from-price">from {lowestPrice.price}</span>
-          )}
-          {!showImg && (
-            <button
-              className={`card-heart-bare${wishlisted ? ' active' : ''}`}
-              onClick={handleWishlist}
-              aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
-            >
-              <svg width="14" height="14" fill={wishlisted ? '#f28b82' : 'none'} stroke={wishlisted ? '#f28b82' : 'currentColor'} strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
-            </button>
           )}
           <button
             className="btn-quote"
