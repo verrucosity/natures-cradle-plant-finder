@@ -37,11 +37,13 @@ export function initContextMenuGuard() {
 }
 
 // ── Keyboard shortcut blockers ────────────────────────────────────────────────
-// Blocks Ctrl+U (view source), Ctrl+S (save page), Ctrl+A (select all)
+// Blocks Ctrl+U (view source) and Ctrl+S (save page).
+// Ctrl+A and Ctrl+P are left alone — real customers select text to copy
+// plant names and print pages; blocking those hurts them, not scrapers.
 export function initKeyGuard() {
   document.addEventListener('keydown', e => {
     const ctrl = e.ctrlKey || e.metaKey;
-    if (ctrl && ['u', 's', 'a', 'p'].includes(e.key.toLowerCase())) {
+    if (ctrl && ['u', 's'].includes(e.key.toLowerCase())) {
       e.preventDefault();
     }
   });

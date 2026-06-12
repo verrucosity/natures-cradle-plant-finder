@@ -7,11 +7,28 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, phone, notes, items, total_plants, total_units } = req.body;
+  const body = req.body;
 
-  if (!name || !email || !items?.length) {
+  if (!body.name || !body.email || !body.items?.length) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
+
+  // Escape all user-supplied strings before interpolating into email HTML
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
+
+  const name  = esc(body.name);
+  const email = esc(body.email);
+  const phone = esc(body.phone);
+  const notes = esc(body.notes);
+  const total_plants = parseInt(body.total_plants) || 0;
+  const total_units  = parseInt(body.total_units) || 0;
+  const items = body.items.map(item => ({
+    qty: parseInt(item.qty) || 1,
+    size: esc(item.size),
+    plant: { name: esc(item.plant?.name), category: esc(item.plant?.category) },
+  }));
 
   // Build the plant rows HTML
   const plantRows = items.map((item, i) => `
@@ -158,8 +175,8 @@ export default async function handler(req, res) {
     await resend.emails.send({
       from:     'Plant Wizard <onboarding@resend.dev>',
       to:       ['estevan400@gmail.com'],
-      replyTo:  email,
-      subject:  `🌿 New Wishlist — ${name} (${total_plants} plant${total_plants !== 1 ? 's' : ''})`,
+      replyTo:  body.email,
+      subject:  `🌿 New Wishlist — ${body.name} (${total_plants} plant${total_plants !== 1 ? 's' : ''})`,
       html,
     });
 

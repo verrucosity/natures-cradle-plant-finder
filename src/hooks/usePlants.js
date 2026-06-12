@@ -1,16 +1,16 @@
 import { useMemo, useState, useCallback, useEffect } from 'react';
-import PLANTS from '../data/plants.json';
 import GROWERS_CONFIG from '../data/growers.json';
+import { loadPlants } from '../data/loadPlants';
 import { FILTERS } from '../components/Sidebar';
 import { zipToCoords, haversineDistance } from '../utils/distance';
 
 const PER_PAGE = 24;
 
-function buildOptions() {
+function buildOptions(plants) {
   const opts = {};
   FILTERS.forEach(f => {
     const seen = new Set();
-    PLANTS.forEach(p => {
+    plants.forEach(p => {
       const val = p[f.field];
       if (Array.isArray(val)) val.forEach(v => seen.add(v));
       else if (val) seen.add(val);
@@ -19,8 +19,6 @@ function buildOptions() {
   });
   return opts;
 }
-
-const OPTIONS = buildOptions();
 
 const initActive = () => Object.fromEntries(FILTERS.map(f => [f.key, []]));
 
@@ -33,10 +31,22 @@ const growerZipMap = Object.fromEntries(
 const RADIUS_MILES = GROWERS_CONFIG.radiusMiles || 50;
 
 export default function usePlants(customerZip) {
+  const [plants, setPlants] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [query, setQuery]   = useState('');
   const [active, setActive] = useState(initActive);
   const [sort, setSort]     = useState('az');
   const [page, setPage]     = useState(1);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadPlants()
+      .then(data => { if (!cancelled) { setPlants(data); setLoading(false); } })
+      .catch(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const options = useMemo(() => buildOptions(plants), [plants]);
 
   // Grower distance cache keyed by customer zip
   const [growerDistances, setGrowerDistances] = useState({}); // growerId → miles
@@ -63,12 +73,13 @@ export default function usePlants(customerZip) {
   }, [customerZip]);
 
   const filtered = useMemo(() => {
-    let list = PLANTS.filter(p => {
+    let list = plants.filter(p => {
       if (query) {
         const q = query.toLowerCase();
         if (
           !p.name.toLowerCase().includes(q) &&
           !p.category.toLowerCase().includes(q) &&
+          !(p.scientificName || '').toLowerCase().includes(q) &&
           !(p.desc || '').toLowerCase().includes(q)
         ) return false;
       }
@@ -90,7 +101,7 @@ export default function usePlants(customerZip) {
     else list.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
 
     return list;
-  }, [query, active, sort]);
+  }, [plants, query, active, sort]);
 
   const totalPages  = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const safePage    = Math.min(page, totalPages);
@@ -134,11 +145,12 @@ export default function usePlants(customerZip) {
     query, handleQuery,
     active, toggleFilter, removeFilter, clearAll,
     sort, handleSort,
-    page, setPage,
+    page: safePage, setPage,
     paginated, filtered,
     totalPages,
-    options: OPTIONS,
-    totalCount: PLANTS.length,
+    options,
+    totalCount: plants.length,
     growerDistances,
+    loading,
   };
 }

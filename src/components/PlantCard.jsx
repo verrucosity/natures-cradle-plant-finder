@@ -96,13 +96,13 @@ export default function PlantCard({ plant, onOpen }) {
         <div className="card-name">{plant.name}</div>
         {plant.desc && <div className="card-desc">{plant.desc}</div>}
         <div className="card-attrs">
-          {plant.light.map(l => (
+          {(plant.light || []).map(l => (
             <span key={l} className="attr-pill sun">{l}</span>
           ))}
-          {plant.water[0] && (
+          {plant.water?.[0] && (
             <span className="attr-pill water">{plant.water[0]}</span>
           )}
-          {plant.zones.slice(0, 3).map(z => (
+          {(plant.zones || []).slice(0, 3).map(z => (
             <span key={z} className="attr-pill zone">{z}</span>
           ))}
         </div>
@@ -122,9 +122,9 @@ export default function PlantCard({ plant, onOpen }) {
         )}
 
         {/* Availability sizes + prices */}
-        {inStock && avail.some(a => a.size && !/^\d+$/.test(a.size)) && (
+        {inStock && (
           <div className="card-avail">
-            {avail.filter(a => a.size && !/^\d+$/.test(a.size)).map((a, i) => (
+            {availWithSize.map((a, i) => (
               <span key={i} className="card-avail-chip">
                 <span className="card-avail-size">{a.size}</span>
                 <span className="card-avail-price">{a.price}</span>

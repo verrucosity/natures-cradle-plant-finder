@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { WishlistProvider } from './context/WishlistContext';
-import AdminPage from './pages/AdminPage';
+
+// Lazy-load admin so customers never download the PDF-parsing code
+const AdminPage = lazy(() => import('./pages/AdminPage'));
 import Header from './components/Header';
 import Hero from './components/Hero';
 import SearchBar from './components/SearchBar';
@@ -23,6 +25,7 @@ function AppInner({ customerZip, onChangeZip }) {
     totalPages,
     options,
     totalCount,
+    loading,
   } = usePlants(customerZip);
 
   const [modalPlant, setModalPlant] = useState(null);
@@ -42,15 +45,20 @@ function AppInner({ customerZip, onChangeZip }) {
       <div className="layout">
         <Sidebar options={options} active={active} onToggle={toggleFilter} />
         <div className="layout-right">
-          <PlantGrid
+          {loading && (
+            <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-light, #888)' }}>
+              Loading plants…
+            </div>
+          )}
+          {!loading && <PlantGrid
             plants={paginated}
             sort={sort}
             onSort={handleSort}
             activeFilters={active}
             onRemoveFilter={removeFilter}
             onOpen={setModalPlant}
-          />
-          <Pagination page={page} totalPages={totalPages} onPage={setPage} />
+          />}
+          {!loading && <Pagination page={page} totalPages={totalPages} onPage={setPage} />}
         </div>
       </div>
 
@@ -63,11 +71,22 @@ function AppInner({ customerZip, onChangeZip }) {
   );
 }
 
-export default function App() {
-  if (window.location.pathname === '/admin') {
-    return <AdminPage />;
-  }
+// Route check at module level — the path never changes during a mount, and
+// keeping it out of the component avoids calling hooks conditionally.
+const IS_ADMIN = window.location.pathname === '/admin';
 
+export default function App() {
+  if (IS_ADMIN) {
+    return (
+      <Suspense fallback={<div style={{ padding: 60, textAlign: 'center' }}>Loading admin…</div>}>
+        <AdminPage />
+      </Suspense>
+    );
+  }
+  return <CustomerApp />;
+}
+
+function CustomerApp() {
   // Check if customer has already set their zip
   const [customerZip, setCustomerZip] = useState(() => getSavedZip());
   const [zipConfirmed, setZipConfirmed] = useState(() => localStorage.getItem('nc_zip_confirmed') === '1');

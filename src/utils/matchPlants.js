@@ -176,8 +176,16 @@ export function mergePrices(plants, pdfEntries, multiplier = 2.0, growerId = 'de
     return { ...plant, availability, availabilityDate: today };
   });
 
+  // Compact diff for publishing — only plants whose availability changed.
+  // The server merges these into the live plants.json so a single-grower
+  // upload never wipes other growers' prices.
+  const updates = updated
+    .filter(p => byPlantId.has(p.id))
+    .map(p => ({ id: p.id, availability: p.availability, availabilityDate: p.availabilityDate }));
+
   return {
     plants: updated,
+    updates,
     stats: {
       totalPDFEntries: pdfEntries.length,
       matched,

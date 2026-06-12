@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { parsePDF } from '../utils/parsePDF';
 import { mergePrices } from '../utils/matchPlants';
-import PLANTS from '../data/plants.json';
+import { loadPlants } from '../data/loadPlants';
 import GROWER_DIRECTORY from '../data/grower-directory.json';
 import './AdminPage.css';
 
@@ -77,7 +77,8 @@ export default function AdminPage() {
       const entries = await parsePDF(file, (page, total) =>
         setParseProgress({ page, total })
       );
-      const merged = mergePrices(PLANTS, entries, effectiveMultiplier, selectedGrowerId);
+      const plants = await loadPlants();
+      const merged = mergePrices(plants, entries, effectiveMultiplier, selectedGrowerId);
       setResult(merged);
       setStep(STEPS.PREVIEW);
     } catch (err) {
@@ -100,7 +101,8 @@ export default function AdminPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          plants: result.plants,
+          updates: result.updates,
+          growerId: selectedGrowerId,
           stats: result.stats,
           adminPassword: password,
         }),
