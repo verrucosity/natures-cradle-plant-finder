@@ -1,0 +1,78 @@
+.site-footer {
+  background: var(--green-deep);
+  color: var(--green-pale);
+  margin-top: 48px;
+}
+.footer-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 32px 28px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.4fr;
+  gap: 32px;
+}
+.footer-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.footer-leaf {
+  width: 26px;
+  height: 26px;
+  background: var(--green-bright, #6aa84f);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+}
+.footer-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  color: var(--white);
+}
+.footer-tag {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  opacity: .7;
+  margin: 0;
+}
+.footer-col-title {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--white);
+  opacity: .85;
+  margin-bottom: 10px;
+}
+.footer-col p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0;
+  opacity: .85;
+}
+.footer-col a {
+  color: var(--white);
+  text-decoration: none;
+  font-weight: 600;
+}
+.footer-col a:hover { text-decoration: underline; }
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,.12);
+  padding: 14px 32px;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 11px;
+  opacity: .6;
+}
+
+@media (max-width: 700px) {
+  .footer-inner { grid-template-columns: 1fr; gap: 24px; padding: 32px 20px 20px; }
+  .footer-bottom { padding: 14px 20px 70px; } /* extra space for the Filters fab */
+}

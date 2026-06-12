@@ -11,7 +11,10 @@ export default function Pagination({ page, totalPages, onPage }) {
 
   const go = target => {
     onPage(target);
-    window.scrollTo({ top: 200, behavior: 'smooth' });
+    // Scroll to the top of the grid, wherever it currently sits
+    const grid = document.querySelector('.main');
+    const top = grid ? grid.getBoundingClientRect().top + window.scrollY - 130 : 0;
+    window.scrollTo({ top: Math.max(top, 0), behavior: 'smooth' });
   };
 
   return (

@@ -1,6 +1,16 @@
 import './Hero.css';
 
-export default function Hero({ totalCount }) {
+export default function Hero({ totalCount, compact }) {
+  if (compact) {
+    return (
+      <section className="hero hero-compact">
+        <div className="hero-inner">
+          <h1>Welcome back <em>plant hunter</em></h1>
+          <p>{totalCount.toLocaleString()} varieties ready to browse. Pick up where you left off.</p>
+        </div>
+      </section>
+    );
+  }
   return (
     <section className="hero">
       <div className="hero-inner">

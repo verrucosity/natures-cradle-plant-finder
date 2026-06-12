@@ -4,6 +4,7 @@ import { WishlistProvider } from './context/WishlistContext';
 // Lazy-load admin so customers never download the PDF-parsing code
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 import Header from './components/Header';
+import Footer from './components/Footer';
 import Hero from './components/Hero';
 import SearchBar from './components/SearchBar';
 import Sidebar from './components/Sidebar';
@@ -16,6 +17,13 @@ import usePlants from './hooks/usePlants';
 import './App.css';
 
 function AppInner({ customerZip, onChangeZip }) {
+  // Returning visitors get a slimmer hero — they've seen the pitch
+  const [isReturning] = useState(() => {
+    const seen = localStorage.getItem('nc_visited') === '1';
+    localStorage.setItem('nc_visited', '1');
+    return seen;
+  });
+
   const {
     query, handleQuery,
     active, toggleFilter, removeFilter, clearAll,
@@ -37,7 +45,7 @@ function AppInner({ customerZip, onChangeZip }) {
   return (
     <>
       <Header customerZip={customerZip} onChangeZip={onChangeZip} />
-      <Hero totalCount={totalCount} />
+      <Hero totalCount={totalCount} compact={isReturning} />
       <SearchBar
         query={query}
         onQuery={handleQuery}
@@ -94,6 +102,7 @@ function AppInner({ customerZip, onChangeZip }) {
       )}
 
       <WishlistDrawer />
+      <Footer />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { consolidateAvailability } from '../utils/labels';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useWishlist } from '../context/WishlistContext';
 import SizePicker from './SizePicker';
 import './PlantModal.css';
@@ -16,6 +16,13 @@ function ModalImage({ src, alt }) {
 
 export default function PlantModal({ plant, onClose }) {
   const [submitted, setSubmitted] = useState(false);
+
+  // Close on Escape
+  useEffect(() => {
+    const onKey = e => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
   const [showPicker, setShowPicker] = useState(false);
   const { isInWishlist, toggleWishlist, setDrawerOpen } = useWishlist();
   const wishlisted = isInWishlist(plant?.id);
@@ -23,16 +30,17 @@ export default function PlantModal({ plant, onClose }) {
 
   if (!plant) return null;
 
+  // Only show attributes that actually have data
   const attrRows = [
-    ['Light',             plant.light?.join(', ')       || '—'],
-    ['Hardiness Zones',   plant.zones?.join(', ')       || '—'],
-    ['Water Needs',       plant.water?.join(', ')       || '—'],
-    ['Maintenance',       plant.maintenance?.join(', ') || '—'],
-    ['Season of Interest',plant.season?.join(', ')      || '—'],
-    ['Average Height',    plant.height                  || '—'],
-    ['Soil Type',         plant.soil?.join(', ')        || '—'],
-    ['Plant Type',        plant.plantType               || '—'],
-  ];
+    ['Light',             plant.light?.join(', ')],
+    ['Hardiness Zones',   plant.zones?.join(', ')],
+    ['Water Needs',       plant.water?.join(', ')],
+    ['Maintenance',       plant.maintenance?.join(', ')],
+    ['Season of Interest',plant.season?.join(', ')],
+    ['Average Height',    plant.height],
+    ['Soil Type',         plant.soil?.join(', ')],
+    ['Plant Type',        plant.plantType],
+  ].filter(([, val]) => val);
 
   function handleSubmit(e) {
     e.preventDefault();
