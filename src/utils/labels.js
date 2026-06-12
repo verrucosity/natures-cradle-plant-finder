@@ -11,6 +11,8 @@ export function cleanSizeLabel(size) {
   let s = String(size)
     .replace(JARGON, '')
     .replace(/\bgal\b\.?/gi, 'Gallon')
+    .replace(/\bGallon(\s+Gallon)+\b/gi, 'Gallon') // "7 gal. Gallon" → "7 Gallon"
+    .replace(/\b(\d+(?:\.\d+)?) Gallon \1 Gallon\b/gi, '$1 Gallon') // "3 gal. 3 Gallon" → "3 Gallon"
     .replace(/\s{2,}/g, ' ')
     .replace(/[\s,;-]+$/g, '')
     .trim();
